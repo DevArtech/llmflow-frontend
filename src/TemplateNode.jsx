@@ -10,7 +10,14 @@ function TemplateNode({ data, isConnectable }) {
         isConnectable={isConnectable}
       />
       <div>
-        <label htmlFor="text">{data["label"]}</label>
+        <label htmlFor="text">{data["name"]}</label>
+        {
+          data["items"] && data["items"].map((item, index) => (
+            <div key={index} style={{marginBottom: index === data["items"].length - 1 ? "8px" : "0px"}}>
+              {item}
+            </div>
+          ))
+        }
       </div>
       <Handle
         type="source"

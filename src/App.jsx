@@ -12,6 +12,8 @@ import ReactFlow, {
 
 import "reactflow/dist/style.css";
 
+import styles from "./App.css";
+
 import TemplateNode from "./TemplateNode.jsx";
 import "./template-node.css";
 
@@ -22,35 +24,55 @@ const rfStyle = {
 let id = 1;
 const getId = () => `${id++}`;
 
-const MIN_DISTANCE = 150;
+const MIN_DISTANCE = 100;
 
 const initialNodes = [
   {
     id: "1",
     type: "templateNode",
     position: {
-      x: window.innerWidth / 2.15,
-      y: window.innerHeight / 2.65,
+      x: window.innerWidth / 2.5,
+      y: window.innerHeight / 2.85,
     },
-    data: { label: "Test Node " + getId() },
-  },
-  {
-    id: "2",
-    type: "templateNode",
-    position: {
-      x: window.innerWidth / 2.15,
-      y: window.innerHeight / 2.65 + 100,
-    },
-    data: { label: "Test Node " + getId() },
-  },
-  {
-    id: "3",
-    type: "templateNode",
-    position: {
-      x: window.innerWidth / 2.15,
-      y: window.innerHeight / 2.65 + 200,
-    },
-    data: { label: "Test Node " + getId() },
+    data: { name: "Test Node " + getId(),
+            items: [<div style={{display: "flex", gap: "5px", alignItems: "center"}}>
+                      <label>Text</label>
+                      <input key={0} type="text" style={{fontSize: "12px", width: "100%"}}/>
+                    </div>,
+
+                    <div style={{display: "flex", gap: "5px", alignItems: "center"}}>
+                      <label>File</label>
+                      <input key={1} type="file" style={{fontSize: "12px", width: "100%", color: "white"}}/>
+                    </div>,
+
+                    <div style={{display: "flex", gap: "5px", alignItems: "center"}}>
+                      <label>Radio</label>
+                      <fieldset style={{border: "none", width: "100%", display: "flex", justifyContent: "space-around"}} key={2} id="group">
+                        <div style={{ textAlign: "center" }}>
+                          <input type="radio" value="A" name="group" style={{ fontSize: "12px" }} />
+                          <p style={{lineHeight: 0, fontSize: "10px", color: "white", margin: "10px 0 0 0"}}>A</p>
+                        </div>
+                        <div style={{ textAlign: "center" }}>
+                          <input type="radio" value="B" name="group" style={{ fontSize: "12px" }} />
+                          <p style={{lineHeight: 0, fontSize: "10px", color: "white", margin: "10px 0 0 0"}}>B</p>
+                        </div>
+                        <div style={{ textAlign: "center" }}>
+                          <input type="radio" value="C" name="group" style={{ fontSize: "12px" }} />
+                          <p style={{lineHeight: 0, fontSize: "10px", color: "white", margin: "10px 0 0 0"}}>C</p>
+                        </div>
+                        <div style={{ textAlign: "center" }}>
+                          <input type="radio" value="D" name="group" style={{ fontSize: "12px" }} />
+                          <p style={{lineHeight: 0, fontSize: "10px", color: "white", margin: "10px 0 0 0"}}>D</p>
+                        </div>
+                      </fieldset>
+                    </div>,
+
+                    <div style={{display: "flex", gap: "5px", alignItems: "center"}}>
+                      <label>Color</label>
+                      <input key={3} type="color" style={{fontSize: "12px", width: "100%", color: "white"}}/>
+                    </div>,
+                  ]
+     },
   },
 ];
 const initialEdges = [
@@ -91,7 +113,7 @@ export default function App() {
             x: event.clientX - 75,
             y: event.clientY - 17.5,
           },
-          data: { label: "Test Node " + id },
+          data: { name: "Test Node " + id },
         };
 
         setNodes((nds) => nds.concat(newNode));
