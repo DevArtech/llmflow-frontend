@@ -1,4 +1,16 @@
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useRef, useState } from "react";
+import {
+  TextInput,
+  FileInput,
+  RadioInput,
+  ColorInput,
+  SliderInput,
+  DropdownInput,
+  CheckboxInput,
+  DatetimeInput,
+  BezierCurveInput,
+  NumberInput,
+} from "./node-elements.tsx";
 import ReactFlow, {
   MiniMap,
   Controls,
@@ -12,8 +24,6 @@ import ReactFlow, {
 
 import "reactflow/dist/style.css";
 
-import styles from "./App.css";
-
 import TemplateNode from "./TemplateNode.jsx";
 import "./template-node.css";
 
@@ -26,65 +36,98 @@ const getId = () => `${id++}`;
 
 const MIN_DISTANCE = 100;
 
-const initialNodes = [
-  {
-    id: "1",
-    type: "templateNode",
-    position: {
-      x: window.innerWidth / 2.5,
-      y: window.innerHeight / 2.85,
-    },
-    data: { name: "Test Node " + getId(),
-            items: [<div style={{display: "flex", gap: "5px", alignItems: "center"}}>
-                      <label>Text</label>
-                      <input key={0} type="text" style={{fontSize: "12px", width: "100%"}}/>
-                    </div>,
-
-                    <div style={{display: "flex", gap: "5px", alignItems: "center"}}>
-                      <label>File</label>
-                      <input key={1} type="file" style={{fontSize: "12px", width: "100%", color: "white"}}/>
-                    </div>,
-
-                    <div style={{display: "flex", gap: "5px", alignItems: "center"}}>
-                      <label>Radio</label>
-                      <fieldset style={{border: "none", width: "100%", display: "flex", justifyContent: "space-around"}} key={2} id="group">
-                        <div style={{ textAlign: "center" }}>
-                          <input type="radio" value="A" name="group" style={{ fontSize: "12px" }} />
-                          <p style={{lineHeight: 0, fontSize: "10px", color: "white", margin: "10px 0 0 0"}}>A</p>
-                        </div>
-                        <div style={{ textAlign: "center" }}>
-                          <input type="radio" value="B" name="group" style={{ fontSize: "12px" }} />
-                          <p style={{lineHeight: 0, fontSize: "10px", color: "white", margin: "10px 0 0 0"}}>B</p>
-                        </div>
-                        <div style={{ textAlign: "center" }}>
-                          <input type="radio" value="C" name="group" style={{ fontSize: "12px" }} />
-                          <p style={{lineHeight: 0, fontSize: "10px", color: "white", margin: "10px 0 0 0"}}>C</p>
-                        </div>
-                        <div style={{ textAlign: "center" }}>
-                          <input type="radio" value="D" name="group" style={{ fontSize: "12px" }} />
-                          <p style={{lineHeight: 0, fontSize: "10px", color: "white", margin: "10px 0 0 0"}}>D</p>
-                        </div>
-                      </fieldset>
-                    </div>,
-
-                    <div style={{display: "flex", gap: "5px", alignItems: "center"}}>
-                      <label>Color</label>
-                      <input key={3} type="color" style={{fontSize: "12px", width: "100%", color: "white"}}/>
-                    </div>,
-                  ]
-     },
-  },
-];
-const initialEdges = [
-  { id: "e1-2", type: "smoothstep", source: "1", target: "2" },
-];
-
 const nodeTypes = { templateNode: TemplateNode };
 
 export default function App() {
   const store = useStoreApi();
   const connectingNodeId = useRef(null);
   const { screenToFlowPosition } = useReactFlow();
+  const [dragDisabled, setDragDisabled] = useState(false);
+
+  React.useEffect(() => {
+    getId();
+  }, []);
+
+  const initialNodes = [
+    {
+      id: "1",
+      type: "templateNode",
+      position: {
+        x: window.innerWidth / 2.5,
+        y: window.innerHeight / 2.85,
+      },
+      data: {
+        name: "Test Node " + id,
+        items: [
+          <TextInput label="Text" disableDrag={setDragDisabled} />,
+          <FileInput label="File" />,
+          <RadioInput
+            label="Radio"
+            options={["A", "B", "C", "D", "E", "F", "G"]}
+          />,
+          <ColorInput label="Color" initialColor="red" />,
+          <SliderInput
+            min={0}
+            max={1}
+            step={0.01}
+            initial={0.5}
+            label="Slider"
+            disableDrag={setDragDisabled}
+          />,
+          <DropdownInput
+            label="Dropdown"
+            options={["Option A", "Option B", "Option C"]}
+          />,
+          <CheckboxInput label="Check Single" options={["A"]} />,
+          <CheckboxInput
+            label="Check"
+            options={["A", "B", "C", "D", "E", "F", "G"]}
+          />,
+          <TextInput
+            label="Link"
+            placeholder="https://..."
+            type="link"
+            disableDrag={setDragDisabled}
+          />,
+          <TextInput
+            label="Email"
+            type="email"
+            disableDrag={setDragDisabled}
+          />,
+          <TextInput
+            label="Password"
+            type="password"
+            disableDrag={setDragDisabled}
+          />,
+          <DatetimeInput label="Datetime" startingDate="2024-05-09T21:35" />,
+          <NumberInput
+            label="Number"
+            min={0}
+            max={100}
+            initial={50}
+            disableDrag={setDragDisabled}
+          />,
+          <BezierCurveInput
+            label="Bezier Curve"
+            initialHandles={[
+              { x: 0, y: 0 },
+              { x: 75, y: 0 },
+              { x: 225, y: 200 },
+              { x: 300, y: 200 },
+            ]}
+            disableDrag={setDragDisabled}
+            maxX={300}
+            maxY={200}
+          />,
+        ],
+      },
+    },
+  ];
+
+  const initialEdges = [
+    { id: "e1-2", type: "smoothstep", source: "1", target: "2" },
+  ];
+
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
@@ -222,6 +265,8 @@ export default function App() {
       <ReactFlow
         nodes={nodes}
         edges={edges}
+        nodesDraggable={!dragDisabled}
+        panOnDrag={!dragDisabled}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
