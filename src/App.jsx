@@ -20,6 +20,9 @@ import ReactFlow, {
   addEdge,
   useReactFlow,
   useStoreApi,
+  NodesChange,
+  OnNodesChange,
+  applyNodeChanges,
 } from "reactflow";
 
 import "reactflow/dist/style.css";
@@ -78,10 +81,16 @@ export default function App() {
             label="Dropdown"
             options={["Option A", "Option B", "Option C"]}
           />,
-          <CheckboxInput label="Check Single" options={["A"]} />,
+          <CheckboxInput
+            label="Check Single"
+            options={{ labels: ["A"], states: [false] }}
+          />,
           <CheckboxInput
             label="Check"
-            options={["A", "B", "C", "D", "E", "F", "G"]}
+            options={{
+              labels: ["A", "B", "C", "D", "E", "F", "G"],
+              states: [true, false, true, false, true, false, true],
+            }}
           />,
           <TextInput
             label="Link"
@@ -99,6 +108,7 @@ export default function App() {
             type="password"
             disableDrag={setDragDisabled}
           />,
+          <TextInput label="Phone" type="tel" disableDrag={setDragDisabled} />,
           <DatetimeInput label="Datetime" startingDate="2024-05-09T21:35" />,
           <NumberInput
             label="Number"
@@ -128,7 +138,7 @@ export default function App() {
     { id: "e1-2", type: "smoothstep", source: "1", target: "2" },
   ];
 
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [nodes, setNodes] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
   const onConnect = useCallback((params) => {
@@ -259,6 +269,10 @@ export default function App() {
     },
     [getClosestEdge]
   );
+
+  const onNodesChange = (changes) => {
+    setNodes((nds) => applyNodeChanges(changes, nds));
+  };
 
   return (
     <div style={{ width: "100vw", height: "100vh", margin: 0, padding: 0 }}>

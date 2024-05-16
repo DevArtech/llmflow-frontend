@@ -22,3 +22,8 @@
   stroke: #bbb;
   stroke-dasharray: 5 5;
 }
+
+.selected {
+  border: 1px solid #2b2b5759;
+  border-radius: 5px;
+}

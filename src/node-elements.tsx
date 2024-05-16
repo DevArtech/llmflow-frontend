@@ -34,11 +34,12 @@ interface FileInputProps {
 interface RadioInputProps {
   label: string;
   options: string[];
+  initial?: number;
 }
 
 interface ColorInputProps {
   label: string;
-  initialColor: string;
+  initialColor?: string;
 }
 
 interface SliderInputProps {
@@ -46,18 +47,20 @@ interface SliderInputProps {
   min: number;
   max: number;
   step: number;
-  initial: number;
+  initial?: number;
   disableDrag(disable: boolean): void;
 }
 
 interface DropdownInputProps {
   label: string;
   options: string[];
+  initial?: string;
 }
 
 interface CheckboxInputProps {
   label: string;
-  options: string[];
+  options: { labels: string[]; states: boolean[] };
+  isToggle?: boolean;
 }
 
 interface BezierCurveInputProps {
@@ -169,7 +172,8 @@ export function RadioInput(props: RadioInputProps) {
 
 export function ColorInput(props: ColorInputProps) {
   const [color, setColor] = React.useState(
-    getHexCode(props.initialColor) || props.initialColor
+    getHexCode(props.initialColor ? props.initialColor : "black") ||
+      props.initialColor
   );
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -237,12 +241,18 @@ export function SliderInput(props: SliderInputProps) {
 }
 
 export function DropdownInput(props: DropdownInputProps) {
+  const [selection, setSelection] = React.useState(props.initial);
+
   return (
     <div style={{ display: "flex", gap: "5px", alignItems: "center" }}>
       <label style={{ textWrap: "nowrap", textAlign: "left" }}>
         {props.label}
       </label>
-      <select style={{ fontSize: "12px", width: "100%" }}>
+      <select
+        style={{ fontSize: "12px", width: "100%" }}
+        value={selection}
+        onChange={(event) => setSelection(event.target.value)}
+      >
         {props.options.map((option, index) => (
           <option key={index} value={option}>
             {option}
@@ -254,13 +264,15 @@ export function DropdownInput(props: DropdownInputProps) {
 }
 
 export function CheckboxInput(props: CheckboxInputProps) {
+  const [states, setStates] = React.useState(props.options["states"]);
+
   return (
     <div
       style={{
         display: "flex",
         gap: "5px",
         alignItems: "center",
-        marginBottom: props.options.length > 1 ? "0.5rem" : "0",
+        marginBottom: props.options["labels"].length > 1 ? "0.5rem" : "0",
       }}
     >
       <label style={{ textWrap: "nowrap", textAlign: "left" }}>
@@ -271,20 +283,29 @@ export function CheckboxInput(props: CheckboxInputProps) {
           border: "none",
           width: "100%",
           display: "flex",
-          justifyContent: props.options.length > 1 ? "space-around" : "left",
+          justifyContent:
+            props.options["labels"].length > 1 ? "space-around" : "left",
           padding: "0",
         }}
         id="group"
       >
-        {props.options.map((label, index) => (
+        {props.options["labels"].map((label, index) => (
           <div style={{ textAlign: "center" }} key={index}>
             <input
               type="checkbox"
               value={label}
               name="group"
               style={{ fontSize: "12px" }}
+              checked={states[index]}
+              onChange={() => {
+                setStates((prevStates) => {
+                  const newStates = [...prevStates];
+                  newStates[index] = !newStates[index];
+                  return newStates;
+                });
+              }}
             />
-            {props.options.length > 1 && (
+            {props.options["labels"].length > 1 && (
               <p
                 style={{
                   lineHeight: 0,
