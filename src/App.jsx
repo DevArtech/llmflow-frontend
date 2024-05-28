@@ -11,6 +11,7 @@ import {
   BezierCurveInput,
   NumberInput,
 } from "./node-elements.tsx";
+import { NodeBuilder } from "./node-builder.tsx";
 import ReactFlow, {
   MiniMap,
   Controls,
@@ -34,7 +35,7 @@ const rfStyle = {
   backgroundColor: "#404047",
 };
 
-let id = 1;
+let id = 2;
 const getId = () => `${id++}`;
 
 const MIN_DISTANCE = 100;
@@ -56,8 +57,8 @@ export default function App() {
       id: "1",
       type: "templateNode",
       position: {
-        x: window.innerWidth / 2.5,
-        y: window.innerHeight / 2.85,
+        x: window.innerWidth / 3.25,
+        y: window.innerHeight / 12,
       },
       data: {
         name: "Test Node " + id,
@@ -130,6 +131,41 @@ export default function App() {
             maxY={200}
           />,
         ],
+      },
+    },
+    {
+      id: "2",
+      type: "templateNode",
+      position: {
+        x: window.innerWidth / 1.75,
+        y: window.innerHeight / 3,
+      },
+      data: {
+        name: "Node Builder Node",
+        items: NodeBuilder({
+          node: {
+            text: {
+              label: "Test",
+              placeholder: "Testing Node",
+              disableDrag: setDragDisabled,
+            },
+            file: {
+              label: "File",
+            },
+            bezierCurve: {
+              label: "Bezier Curve",
+              initialHandles: [
+                { x: 0, y: 0 },
+                { x: 0, y: 200 },
+                { x: 300, y: 0 },
+                { x: 300, y: 200 },
+              ],
+              disableDrag: setDragDisabled,
+              maxX: 300,
+              maxY: 200,
+            },
+          },
+        }),
       },
     },
   ];
