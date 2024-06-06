@@ -1,7 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap");
 
 .template-node {
-  height: 35px;
+  min-height: 35px;
   border: 1px solid #29292c;
   padding: 5px;
   border-radius: 5px;
@@ -21,4 +21,9 @@
 .temp .react-flow__edge-path {
   stroke: #bbb;
   stroke-dasharray: 5 5;
+}
+
+.selected {
+  border: 1px solid #2b2b5759;
+  border-radius: 5px;
 }
