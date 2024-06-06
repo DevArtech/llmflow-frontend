@@ -34,7 +34,7 @@ const rfStyle = {
   backgroundColor: "#404047",
 };
 
-let id = 2;
+let id = 1;
 const getId = () => `${id++}`;
 
 const MIN_DISTANCE = 100;
@@ -375,7 +375,7 @@ export default function App() {
           }}
         >
           <button onClick={addAPINode} style={{ padding: "0.5rem" }}>
-            Test
+            Test Node
           </button>
         </div>
         {/* Main Viewport */}
