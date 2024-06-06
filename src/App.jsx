@@ -308,28 +308,107 @@ export default function App() {
     setNodes((nds) => applyNodeChanges(changes, nds));
   };
 
+  function addAPINode() {
+    fetch("http://127.0.0.1:8000/api/v2/get-node")
+      .then((response) => response.json())
+      .then((data) => {
+        const result = data["result"];
+        const resultObj = JSON.parse(result);
+        const node = {
+          id: getId(),
+          type: "templateNode",
+          position: {
+            x: 10,
+            y: 10,
+          },
+          data: {
+            name: resultObj["name"],
+            items: NodeBuilder({
+              node: resultObj["items"],
+              disableDrag: setDragDisabled,
+            }),
+          },
+        };
+        setNodes((nds) => nds.concat(node));
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }
+
   return (
-    <div style={{ width: "100vw", height: "100vh", margin: 0, padding: 0 }}>
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        nodesDraggable={!dragDisabled}
-        panOnDrag={!dragDisabled}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        onConnectStart={onConnectStart}
-        onConnectEnd={onConnectEnd}
-        onNodeDrag={onNodeDrag}
-        onNodeDragStop={onNodeDragStop}
-        defaultEdgeOptions={{ type: "smoothstep" }}
-        nodeTypes={nodeTypes}
-        style={rfStyle}
+    <div style={{ overflow: "hidden" }}>
+      {/* Top Navbar */}
+      <div
+        style={{
+          width: "100vw",
+          height: "calc(5vh - 1px)",
+          backgroundColor: "#252525",
+          background:
+            "linear-gradient(135deg, rgba(25,25,25,1) 0%, rgba(35,35,35,1) 100%)",
+          borderBottom: "1px solid #505050",
+          paddingLeft: "1rem",
+        }}
       >
-        <Controls />
-        <MiniMap style={rfStyle} />
-        <Background variant="dots" gap={12} size={1} />
-      </ReactFlow>
+        <h1
+          style={{
+            color: "#efefef",
+            margin: 0,
+            fontSize: "2.5vh",
+            lineHeight: "4.5vh",
+          }}
+        >
+          LLMFlow
+        </h1>
+      </div>
+      <div style={{ display: "flex" }}>
+        {/* Left Navbar */}
+        <div
+          style={{
+            width: "5vw",
+            height: "95vh",
+            backgroundColor: "#252525",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            paddingTop: "1rem",
+          }}
+        >
+          <button onClick={addAPINode} style={{ padding: "0.5rem" }}>
+            Test
+          </button>
+        </div>
+        {/* Main Viewport */}
+        <div
+          style={{
+            width: "95vw",
+            height: "95vh",
+            margin: 0,
+            padding: 0,
+          }}
+        >
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            nodesDraggable={!dragDisabled}
+            panOnDrag={!dragDisabled}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+            onConnectStart={onConnectStart}
+            onConnectEnd={onConnectEnd}
+            onNodeDrag={onNodeDrag}
+            onNodeDragStop={onNodeDragStop}
+            defaultEdgeOptions={{ type: "smoothstep" }}
+            nodeTypes={nodeTypes}
+            style={rfStyle}
+          >
+            <Controls />
+            <MiniMap style={rfStyle} />
+            <Background variant="dots" gap={12} size={1} />
+          </ReactFlow>
+        </div>
+      </div>
     </div>
   );
 }
