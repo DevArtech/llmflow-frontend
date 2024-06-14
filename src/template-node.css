@@ -1,7 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap");
 
 .template-node {
-  height: 35px;
   border: 1px solid #29292c;
   padding: 5px;
   border-radius: 5px;
@@ -9,16 +8,46 @@
   min-width: 150px;
 }
 
-.template-node label {
+.template-node > div > div label:not(.header-label) {
   display: block;
   color: #eee;
   font-size: 12px;
   font-family: "Nunito Sans", sans-serif;
-  text-align: center;
-  line-height: 35px;
+  text-align: left;
+  margin-bottom: 0.5rem;
+  padding-top: 0.5rem;
 }
 
-.temp .react-flow__edge-path {
-  stroke: #bbb;
-  stroke-dasharray: 5 5;
+.selected {
+  border: 1px solid #2b2b5759;
+  border-radius: 5px;
+}
+
+.header-label {
+  display: block;
+  color: #eee;
+  font-size: 14px;
+  font-family: "Nunito Sans", sans-serif;
+  text-align: left;
+  line-height: 1.75em;
+  margin-right: 5rem;
+}
+
+.hide-button {
+  background: none;
+  border: none;
+  color: #008dce;
+  font-size: 12px;
+  font-family: "Nunito Sans", sans-serif;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  transition: all 0.1s ease-in-out;
+}
+
+.hide-button:hover {
+  color: #003c5a;
 }

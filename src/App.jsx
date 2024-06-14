@@ -1,4 +1,21 @@
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useRef, useState } from "react";
+import {
+  TextInput,
+  FileInput,
+  RadioInput,
+  ColorInput,
+  SliderInput,
+  DropdownInput,
+  CheckboxInput,
+  DatetimeInput,
+  BezierCurveInput,
+  NumberInput,
+  TextAreaInput,
+  OpenAIElement,
+  GeminiElement,
+  OllamaElement,
+} from "./node-elements.tsx";
+import { NodeBuilder } from "./node-builder.tsx";
 import ReactFlow, {
   MiniMap,
   Controls,
@@ -8,54 +25,26 @@ import ReactFlow, {
   addEdge,
   useReactFlow,
   useStoreApi,
+  applyNodeChanges,
 } from "reactflow";
+import { useEffect } from "react";
 
 import "reactflow/dist/style.css";
 
 import TemplateNode from "./TemplateNode.jsx";
 import "./template-node.css";
 
+import styles from "./App.module.css";
+import { Rtt } from "@mui/icons-material";
+
 const rfStyle = {
   backgroundColor: "#404047",
 };
 
-let id = 1;
+let id = 0;
 const getId = () => `${id++}`;
 
-const MIN_DISTANCE = 150;
-
-const initialNodes = [
-  {
-    id: "1",
-    type: "templateNode",
-    position: {
-      x: window.innerWidth / 2.15,
-      y: window.innerHeight / 2.65,
-    },
-    data: { label: "Test Node " + getId() },
-  },
-  {
-    id: "2",
-    type: "templateNode",
-    position: {
-      x: window.innerWidth / 2.15,
-      y: window.innerHeight / 2.65 + 100,
-    },
-    data: { label: "Test Node " + getId() },
-  },
-  {
-    id: "3",
-    type: "templateNode",
-    position: {
-      x: window.innerWidth / 2.15,
-      y: window.innerHeight / 2.65 + 200,
-    },
-    data: { label: "Test Node " + getId() },
-  },
-];
-const initialEdges = [
-  { id: "e1-2", type: "smoothstep", source: "1", target: "2" },
-];
+const MIN_DISTANCE = 100;
 
 const nodeTypes = { templateNode: TemplateNode };
 
@@ -63,14 +52,28 @@ export default function App() {
   const store = useStoreApi();
   const connectingNodeId = useRef(null);
   const { screenToFlowPosition } = useReactFlow();
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [dragDisabled, setDragDisabled] = useState(false);
+  const [selectedTab, setSelectedTab] = useState(0);
+  const [collapsed, setCollapsed] = useState(false);
+  const initialNodes = [];
+
+  useEffect(() => {
+    getId();
+  }, []);
+
+  const initialEdges = [];
+
+  const [nodes, setNodes] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
-  const onConnect = useCallback((params) => {
-    // reset the start node on connections
-    connectingNodeId.current = null;
-    setEdges((eds) => addEdge(params, eds));
-  }, []);
+  const onConnect = useCallback(
+    (params) => {
+      // reset the start node on connections
+      connectingNodeId.current = null;
+      setEdges((eds) => addEdge(params, eds));
+    },
+    [setEdges]
+  );
 
   const onConnectStart = useCallback((_, { nodeId }) => {
     connectingNodeId.current = nodeId;
@@ -91,7 +94,7 @@ export default function App() {
             x: event.clientX - 75,
             y: event.clientY - 17.5,
           },
-          data: { label: "Test Node " + id },
+          data: { name: "Test Node " + id },
         };
 
         setNodes((nds) => nds.concat(newNode));
@@ -104,72 +107,52 @@ export default function App() {
         );
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [screenToFlowPosition]
   );
 
-  const getClosestEdge = useCallback((node) => {
-    const { nodeInternals } = store.getState();
-    const storeNodes = Array.from(nodeInternals.values());
+  const getClosestEdge = useCallback(
+    (node) => {
+      const { nodeInternals } = store.getState();
+      const storeNodes = Array.from(nodeInternals.values());
 
-    const closestNode = storeNodes.reduce(
-      (res, n) => {
-        if (n.id !== node.id) {
-          const dx = n.positionAbsolute.x - node.positionAbsolute.x;
-          const dy = n.positionAbsolute.y - node.positionAbsolute.y;
-          const d = Math.sqrt(dx * dx + dy * dy);
+      const closestNode = storeNodes.reduce(
+        (res, n) => {
+          if (n.id !== node.id) {
+            const dx = n.positionAbsolute.x - node.positionAbsolute.x;
+            const dy = n.positionAbsolute.y - node.positionAbsolute.y;
+            const d = Math.sqrt(dx * dx + dy * dy);
 
-          if (d < res.distance && d < MIN_DISTANCE) {
-            res.distance = d;
-            res.node = n;
+            if (d < res.distance && d < MIN_DISTANCE) {
+              res.distance = d;
+              res.node = n;
+            }
           }
-        }
 
-        return res;
-      },
-      {
-        distance: Number.MAX_VALUE,
-        node: null,
+          return res;
+        },
+        {
+          distance: Number.MAX_VALUE,
+          node: null,
+        }
+      );
+
+      if (!closestNode.node) {
+        return null;
       }
-    );
 
-    if (!closestNode.node) {
-      return null;
-    }
+      const closeNodeIsSource =
+        closestNode.node.positionAbsolute.x < node.positionAbsolute.x;
 
-    const closeNodeIsSource =
-      closestNode.node.positionAbsolute.x < node.positionAbsolute.x;
-
-    return {
-      id: closeNodeIsSource
-        ? `${closestNode.node.id}-${node.id}`
-        : `${node.id}-${closestNode.node.id}`,
-      source: closeNodeIsSource ? closestNode.node.id : node.id,
-      target: closeNodeIsSource ? node.id : closestNode.node.id,
-    };
-  }, []);
-
-  const onNodeDrag = useCallback(
-    (_, node) => {
-      const closeEdge = getClosestEdge(node);
-
-      setEdges((es) => {
-        const nextEdges = es.filter((e) => e.className !== "temp");
-
-        if (
-          closeEdge &&
-          !nextEdges.find(
-            (ne) =>
-              ne.source === closeEdge.source && ne.target === closeEdge.target
-          )
-        ) {
-          closeEdge.className = "temp";
-          nextEdges.push(closeEdge);
-        }
-
-        return nextEdges;
-      });
+      return {
+        id: closeNodeIsSource
+          ? `${closestNode.node.id}-${node.id}`
+          : `${node.id}-${closestNode.node.id}`,
+        source: closeNodeIsSource ? closestNode.node.id : node.id,
+        target: closeNodeIsSource ? node.id : closestNode.node.id,
+      };
     },
-    [getClosestEdge, setEdges]
+    [store]
   );
 
   const onNodeDragStop = useCallback(
@@ -192,29 +175,145 @@ export default function App() {
         return nextEdges;
       });
     },
-    [getClosestEdge]
+    [setEdges, getClosestEdge]
   );
 
+  const onNodesChange = (changes) => {
+    setNodes((nds) => applyNodeChanges(changes, nds));
+  };
+
+  function addAPINode(endpoint) {
+    fetch(`http://127.0.0.1:8000/api/v1/${endpoint}`)
+      .then((response) => response.json())
+      .then((result) => {
+        const node = {
+          id: getId(),
+          type: "templateNode",
+          position: {
+            x: 10,
+            y: 10,
+          },
+          data: {
+            icon: result["icon"],
+            name: result["name"],
+            items: NodeBuilder({
+              items: result["items"],
+              disableDrag: setDragDisabled,
+            }),
+          },
+        };
+        setNodes((nds) => nds.concat(node));
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }
+
   return (
-    <div style={{ width: "100vw", height: "100vh", margin: 0, padding: 0 }}>
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        onConnectStart={onConnectStart}
-        onConnectEnd={onConnectEnd}
-        onNodeDrag={onNodeDrag}
-        onNodeDragStop={onNodeDragStop}
-        defaultEdgeOptions={{ type: "smoothstep" }}
-        nodeTypes={nodeTypes}
-        style={rfStyle}
-      >
-        <Controls />
-        <MiniMap style={rfStyle} />
-        <Background variant="dots" gap={12} size={1} />
-      </ReactFlow>
+    <div style={{ overflow: "hidden" }}>
+      {/* Top Navbar */}
+      <div className={styles["top-navbar"]}>
+        <h1 className={styles["header"]}>LLMFlow</h1>
+        <div className={styles["tab-bar"]}>
+          <button
+            className={selectedTab === 0 ? styles["active"] : ""}
+            onClick={() => setSelectedTab(0)}
+          >
+            Node Manager
+          </button>
+          <button
+            className={selectedTab === 1 ? styles["active"] : ""}
+            onClick={() => setSelectedTab(1)}
+          >
+            Live Preview
+          </button>
+        </div>
+      </div>
+      <div style={{ display: "flex" }}>
+        {/* Left Navbar */}
+        <div
+          className={`${styles["left-navbar"]} ${
+            collapsed ? styles["collapsed"] : ""
+          }`}
+        >
+          <button
+            className={styles["collapse-button"]}
+            onClick={() => setCollapsed(!collapsed)}
+          >
+            {collapsed ? ">" : "<"}
+          </button>
+          <button
+            className={styles["button"]}
+            onClick={() => addAPINode("llm-models/openai")}
+          >
+            <OpenAIElement width="24px" height="24px" color="white" />
+          </button>
+
+          <button
+            className={styles["button"]}
+            onClick={() => addAPINode("llm-models/gemini")}
+          >
+            <GeminiElement width="24px" height="24px" color="white" />
+          </button>
+
+          <button
+            className={styles["button"]}
+            onClick={() => addAPINode("llm-models/ollama")}
+          >
+            <OllamaElement width="24px" height="24px" color="white" />
+          </button>
+
+          <button
+            className={styles["button"]}
+            onClick={() => addAPINode("input-options/text")}
+          >
+            <Rtt width="24px" height="24px" color="white" />
+          </button>
+
+          <button
+            className={styles["button"]}
+            onClick={() => addAPINode("output-options/text")}
+          >
+            <Rtt width="24px" height="24px" color="white" />
+          </button>
+        </div>
+        {/* Main Viewport */}
+        <div
+          style={{ display: selectedTab === 0 ? "block" : "none" }}
+          className={styles["main-viewport"]}
+        >
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            nodesDraggable={!dragDisabled}
+            panOnDrag={!dragDisabled}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+            onConnectStart={onConnectStart}
+            onConnectEnd={onConnectEnd}
+            onNodeDragStop={onNodeDragStop}
+            defaultEdgeOptions={{ type: "smooth" }}
+            nodeTypes={nodeTypes}
+            style={rfStyle}
+          >
+            <Controls />
+            <MiniMap style={rfStyle} />
+            <Background variant="dots" gap={12} size={1} />
+          </ReactFlow>
+        </div>
+        <div
+          style={{
+            display: selectedTab === 1 ? "block" : "none",
+            textAlign: "center",
+          }}
+          className={styles["main-viewport"]}
+        >
+          <h1 style={{ color: "white" }}>
+            No live preview currently available
+          </h1>
+        </div>
+      </div>
     </div>
   );
 }

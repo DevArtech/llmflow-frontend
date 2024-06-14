@@ -1,0 +1,103 @@
+body {
+  background-color: #404047;
+}
+
+.top-navbar {
+  width: 100vw;
+  height: calc(5vh - 1px);
+  background-color: #191919;
+  border-bottom: 1px solid #505050;
+  padding-left: 1rem;
+  display: flex;
+  align-items: end;
+  gap: 1rem;
+  z-index: 200;
+}
+
+.header {
+  color: #efefef;
+  margin: 0;
+  font-size: 2.5vh;
+  line-height: 5vh;
+}
+
+.left-navbar {
+  width: 5vw;
+  height: 93.3vh;
+  background-color: #252525;
+  display: flex;
+  gap: 0.25rem;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 1rem;
+  z-index: 100;
+  transition: all 0.3s ease-in-out;
+}
+
+.main-viewport {
+  width: 100%;
+  height: 95vh;
+  margin: 0;
+  padding: 0;
+  transition: all 0.3s ease-in-out;
+}
+
+.button {
+  height: 3em;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 0.25rem;
+  background-color: #008dce;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.1s ease-in-out;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.button:hover {
+  background-color: #003c5a;
+}
+
+.tab-bar {
+  width: 100%;
+  display: flex;
+  gap: 0.1rem;
+  height: 4vh;
+}
+
+.tab-bar > button {
+  padding: 0.25rem 1rem;
+  border: none;
+  border-radius: 0.5rem 0.5rem 0 0;
+  background-color: #252525;
+  color: #efefef;
+  cursor: pointer;
+  transition: all 0.1s ease-in-out;
+  border-bottom: 1px solid #252525;
+}
+
+.tab-bar > button:hover {
+  border-bottom: 1px solid #003c5a;
+}
+
+.tab-bar > button.active {
+  border-bottom: 1px solid #008dce;
+}
+
+.collapse-button {
+  border: none;
+  padding: 0.5rem;
+  background: none;
+  color: white;
+  cursor: pointer;
+  position: absolute;
+  left: 5vw;
+  font-weight: bold;
+}
+
+.collapsed {
+  width: 0%;
+  transform: translateX(-5vw);
+}
