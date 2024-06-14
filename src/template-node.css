@@ -51,3 +51,8 @@
 .hide-button:hover {
   color: #003c5a;
 }
+
+.selected {
+  border: 1px solid #2b2b5759;
+  border-radius: 5px;
+}
