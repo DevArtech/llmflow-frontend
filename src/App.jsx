@@ -209,6 +209,18 @@ export default function App() {
       });
   }
 
+  useEffect(() => {
+    const gradioContainer = document.querySelectorAll(".gradio-container");
+    if (gradioContainer) {
+      gradioContainer.forEach((container) => {
+        container.style.margin = "0";
+        container.style.border = "0";
+        container.style.borderRadius = "0";
+        container.style.height = "100%";
+      });
+    }
+  }, [selectedTab]);
+
   return (
     <div style={{ overflow: "hidden" }}>
       {/* Top Navbar */}
@@ -232,6 +244,7 @@ export default function App() {
       <div style={{ display: "flex" }}>
         {/* Left Navbar */}
         <div
+          style={{ display: selectedTab === 0 ? "flex" : "none" }}
           className={`${styles["left-navbar"]} ${
             collapsed ? styles["collapsed"] : ""
           }`}
@@ -303,15 +316,13 @@ export default function App() {
           </ReactFlow>
         </div>
         <div
-          style={{
-            display: selectedTab === 1 ? "block" : "none",
-            textAlign: "center",
-          }}
+          style={{ display: selectedTab === 1 ? "block" : "none" }}
           className={styles["main-viewport"]}
         >
-          <h1 style={{ color: "white" }}>
-            No live preview currently available
-          </h1>
+          <gradio-app
+            src="http://127.0.0.1:8000/gradio"
+            className={styles["gradio-app"]}
+          ></gradio-app>
         </div>
       </div>
     </div>

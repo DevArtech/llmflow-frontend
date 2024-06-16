@@ -101,3 +101,8 @@ body {
   width: 0%;
   transform: translateX(-5vw);
 }
+
+.gradio-app {
+  width: 100%;
+  display: block;
+}
