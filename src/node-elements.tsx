@@ -1,5 +1,6 @@
 import React from "react";
 import { Handle, Position } from "reactflow";
+import * as Icons from "@mui/icons-material";
 
 const color_hex_map = {
   red: "#ff0000",
@@ -97,6 +98,7 @@ interface NumberInputProps {
 }
 
 interface CustomIconElementProps {
+  name?: string;
   color: string;
   width: string;
   height: string;
@@ -627,6 +629,47 @@ export function BezierCurveInput(props: BezierCurveInputProps) {
       </svg>
     </div>
   );
+}
+
+export function SmartElement(props: CustomIconElementProps) {
+  if (props.name === "openai") {
+    return <OpenAIElement {...props} />;
+  } else if (props.name === "gemini") {
+    return <GeminiElement {...props} />;
+  } else if (props.name === "ollama") {
+    return <OllamaElement {...props} />;
+  } else if (props.name === "text") {
+    return <Icons.Rtt style={{ color: props.color ? props.color : "white" }} />;
+  } else if (props.name === "image") {
+    return (
+      <Icons.Image style={{ color: props.color ? props.color : "white" }} />
+    );
+  } else if (props.name === "audio") {
+    return <Icons.Mic style={{ color: props.color ? props.color : "white" }} />;
+  } else if (props.name === "video") {
+    return (
+      <Icons.Movie style={{ color: props.color ? props.color : "white" }} />
+    );
+  } else if (props.name === "file") {
+    return (
+      <Icons.InsertDriveFile
+        style={{ color: props.color ? props.color : "white" }}
+      />
+    );
+  } else {
+    if (!props.name) {
+      return <Icons.Help style={{ color: "white" }} />;
+    }
+    const IconComponent = Icons[props.name];
+
+    if (!IconComponent) {
+      return <Icons.Help style={{ color: "white" }} />;
+    }
+
+    return (
+      <IconComponent style={{ color: props.color ? props.color : "white" }} />
+    );
+  }
 }
 
 export function OpenAIElement(props: CustomIconElementProps) {

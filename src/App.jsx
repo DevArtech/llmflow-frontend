@@ -1,20 +1,5 @@
 import React, { useCallback, useRef, useState } from "react";
-import {
-  TextInput,
-  FileInput,
-  RadioInput,
-  ColorInput,
-  SliderInput,
-  DropdownInput,
-  CheckboxInput,
-  DatetimeInput,
-  BezierCurveInput,
-  NumberInput,
-  TextAreaInput,
-  OpenAIElement,
-  GeminiElement,
-  OllamaElement,
-} from "./node-elements.tsx";
+import { SmartElement } from "./node-elements.tsx";
 import { NodeBuilder } from "./node-builder.tsx";
 import ReactFlow, {
   MiniMap,
@@ -55,6 +40,11 @@ export default function App() {
   const [dragDisabled, setDragDisabled] = useState(false);
   const [selectedTab, setSelectedTab] = useState(0);
   const [collapsed, setCollapsed] = useState(false);
+  const [integrations, setIntegrations] = useState([]);
+  const [selectedIntegration, setSelectedIntegration] = useState("");
+  const [integrationButtons, setIntegrationButtons] = useState([]);
+  const [integrationOptionHovered, setIntegrationOptionHovered] =
+    useState(false);
   const initialNodes = [];
 
   useEffect(() => {
@@ -182,8 +172,8 @@ export default function App() {
     setNodes((nds) => applyNodeChanges(changes, nds));
   };
 
-  function addAPINode(endpoint) {
-    fetch(`http://127.0.0.1:8000/api/v1/${endpoint}`)
+  function addAPINode(integration, endpoint) {
+    fetch(`http://127.0.0.1:8000/api/v1/${integration}/${endpoint}`)
       .then((response) => response.json())
       .then((result) => {
         const node = {
@@ -221,6 +211,57 @@ export default function App() {
     }
   }, [selectedTab]);
 
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/api/v1/integrations")
+      .then((response) => response.json())
+      .then((result) => {
+        setIntegrations(result["integrations"]);
+        const newIntegrationButtons = [];
+        result["integrations"].forEach((integration) => {
+          fetch(`http://127.0.0.1:8000/api/v1/${integration.toLowerCase()}`)
+            .then((response) => response.json())
+            .then((result) => {
+              result["options"].forEach((option) => {
+                newIntegrationButtons.push(
+                  <button
+                    id={integration}
+                    key={option}
+                    className={styles["button"]}
+                    onClick={() =>
+                      addAPINode(
+                        integration.toLowerCase(),
+                        option.toLowerCase()
+                      )
+                    }
+                    onMouseEnter={() => setIntegrationOptionHovered(true)}
+                    onMouseLeave={() => setIntegrationOptionHovered(false)}
+                  >
+                    <SmartElement
+                      name={option.toLowerCase()}
+                      width="24px"
+                      height="24px"
+                      color="white"
+                    />
+                  </button>
+                );
+              });
+            });
+        });
+        setIntegrationButtons(newIntegrationButtons);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }, []);
+
+  function enableDisableIntegration(integration) {
+    if (!integrationOptionHovered && selectedIntegration === integration) {
+      setSelectedIntegration("");
+    } else {
+      setSelectedIntegration(integration);
+    }
+  }
+
   return (
     <div style={{ overflow: "hidden" }}>
       {/* Top Navbar */}
@@ -244,7 +285,7 @@ export default function App() {
       <div style={{ display: "flex" }}>
         {/* Left Navbar */}
         <div
-          style={{ display: selectedTab === 0 ? "flex" : "none" }}
+          style={{ display: selectedTab === 0 ? "block" : "none" }}
           className={`${styles["left-navbar"]} ${
             collapsed ? styles["collapsed"] : ""
           }`}
@@ -255,40 +296,74 @@ export default function App() {
           >
             {collapsed ? ">" : "<"}
           </button>
+          <div
+            style={{
+              overflow: "hidden",
+              display: "flex",
+              flexDirection: "column",
+              gap: "0.5rem",
+              padding: "0.25rem",
+            }}
+          >
+            {integrations.map((integration, index) => (
+              <button
+                className={styles["integration"]}
+                key={index}
+                onClick={() => enableDisableIntegration(integration)}
+              >
+                {integration}
+                <div
+                  className={styles["integration-buttons"]}
+                  style={{
+                    display:
+                      selectedIntegration === integration ? "flex" : "none",
+                  }}
+                >
+                  {integrationButtons.map((button, index) => {
+                    if (button.props.id === integration) {
+                      return button;
+                    }
+                    return null;
+                  })}
+                </div>
+              </button>
+            ))}
+          </div>
+          {/*
           <button
             className={styles["button"]}
-            onClick={() => addAPINode("llm-models/openai")}
+            onClick={() => addAPINode("llms/openai")}
           >
             <OpenAIElement width="24px" height="24px" color="white" />
           </button>
 
           <button
             className={styles["button"]}
-            onClick={() => addAPINode("llm-models/gemini")}
+            onClick={() => addAPINode("llms/gemini")}
           >
             <GeminiElement width="24px" height="24px" color="white" />
           </button>
 
           <button
             className={styles["button"]}
-            onClick={() => addAPINode("llm-models/ollama")}
+            onClick={() => addAPINode("llms/ollama")}
           >
             <OllamaElement width="24px" height="24px" color="white" />
           </button>
 
           <button
             className={styles["button"]}
-            onClick={() => addAPINode("input-options/text")}
+            onClick={() => addAPINode("inputs/text")}
           >
             <Rtt width="24px" height="24px" color="white" />
           </button>
 
           <button
             className={styles["button"]}
-            onClick={() => addAPINode("output-options/text")}
+            onClick={() => addAPINode("outputs/text")}
           >
             <Rtt width="24px" height="24px" color="white" />
-          </button>
+          </button> */}
         </div>
         {/* Main Viewport */}
         <div

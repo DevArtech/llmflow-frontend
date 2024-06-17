@@ -23,13 +23,12 @@ body {
 
 .left-navbar {
   width: 5vw;
-  height: 93.3vh;
+  height: 95vh;
   background-color: #252525;
   display: flex;
   gap: 0.25rem;
   flex-direction: column;
   align-items: center;
-  padding-top: 1rem;
   z-index: 100;
   transition: all 0.3s ease-in-out;
 }
@@ -105,4 +104,25 @@ body {
 .gradio-app {
   width: 100%;
   display: block;
+}
+
+.integration {
+  /* padding-left: 0.5rem; */
+  width: 100%;
+  font-size: 1rem;
+  color: white;
+  background: none;
+  border: 1px solid #252525;
+  border-radius: none;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.1s ease-in-out;
+}
+
+.integration-buttons {
+  margin-top: 0.5rem;
+  gap: 0.25rem;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
