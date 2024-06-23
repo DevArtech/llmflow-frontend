@@ -20,7 +20,6 @@ import TemplateNode from "./TemplateNode.jsx";
 import "./template-node.css";
 
 import styles from "./App.module.css";
-import { Rtt } from "@mui/icons-material";
 
 const rfStyle = {
   backgroundColor: "#404047",
@@ -46,6 +45,7 @@ export default function App() {
   const [integrationOptionHovered, setIntegrationOptionHovered] =
     useState(false);
   const initialNodes = [];
+  const { getNodes, getEdges, getViewport } = useReactFlow();
 
   useEffect(() => {
     getId();
@@ -176,8 +176,13 @@ export default function App() {
     fetch(`http://127.0.0.1:8000/api/v1/${integration}/${endpoint}`)
       .then((response) => response.json())
       .then((result) => {
+        const nodeBuilder = NodeBuilder({
+          items: result["items"],
+          disableDrag: setDragDisabled,
+        });
+        const id = getId();
         const node = {
-          id: getId(),
+          id: id,
           type: "templateNode",
           position: {
             x: 10,
@@ -186,10 +191,7 @@ export default function App() {
           data: {
             icon: result["icon"],
             name: result["name"],
-            items: NodeBuilder({
-              items: result["items"],
-              disableDrag: setDragDisabled,
-            }),
+            items: nodeBuilder,
           },
         };
         setNodes((nds) => nds.concat(node));
@@ -200,15 +202,28 @@ export default function App() {
   }
 
   useEffect(() => {
-    const gradioContainer = document.querySelectorAll(".gradio-container");
-    if (gradioContainer) {
-      gradioContainer.forEach((container) => {
-        container.style.margin = "0";
-        container.style.border = "0";
-        container.style.borderRadius = "0";
-        container.style.height = "100%";
-      });
+    const gradioApp = document.querySelector(".gradio-app");
+    if (gradioApp) {
+      gradioApp.remove();
     }
+
+    const newGradioApp = document.createElement("gradio-app");
+    newGradioApp.src = "http://127.0.0.1:8000/gradio";
+    newGradioApp.className = "gradio-app";
+    document.querySelector(".gradio-element").appendChild(newGradioApp);
+
+    setTimeout(() => {
+      // Need to wait for Gradio to load before modifying styles
+      const gradioContainer = document.querySelector(".gradio-container");
+      if (gradioContainer) {
+        gradioContainer.style.margin = "0";
+        gradioContainer.style.border = "0";
+        gradioContainer.style.borderRadius = "0";
+        gradioContainer.style.height = "95vh";
+        gradioContainer.style.display = "block";
+        gradioContainer.style.overflowY = "auto";
+      }
+    }, 1);
   }, [selectedTab]);
 
   useEffect(() => {
@@ -262,8 +277,88 @@ export default function App() {
     }
   }
 
+  function updateTab() {
+    const nodes = document.querySelectorAll("#node");
+    let nodeArchitecture = { Nodes: [], Edges: [] };
+    nodes.forEach((node) => {
+      let currentNode = {
+        Id: node.parentNode.getAttribute("data-id"),
+        Name: "",
+        Items: [],
+        Handles: [],
+      };
+      const firstChild = node.firstChild;
+      const children = Array.from(firstChild.children);
+      children.forEach((child) => {
+        Array.from(child.children).forEach((grandchild) => {
+          const id = grandchild.getAttribute("id");
+          if (id !== null) {
+            if (id === "name") {
+              currentNode["Name"] = grandchild.innerText;
+            }
+            if (id === "data-item") {
+              const elements = Array.from(grandchild.children);
+              const itemType = elements[0].innerText;
+              const itemValue = elements[1].value;
+              const item = { Type: itemType, Value: itemValue };
+              currentNode["Items"].push(item);
+            }
+            if (id === "handle") {
+              const handle = grandchild.firstChild;
+              if (
+                handle.getAttribute("data-id") &&
+                handle.getAttribute("data-id").includes("source")
+              ) {
+                const handleElement = {
+                  name: handle.getAttribute("data-handleid"),
+                  type: "source",
+                };
+                currentNode["Handles"].push(handleElement);
+              } else if (
+                handle.getAttribute("data-id") &&
+                handle.getAttribute("data-id").includes("target")
+              ) {
+                const handleElement = {
+                  name: handle.getAttribute("data-handleid"),
+                  type: "target",
+                };
+                currentNode["Handles"].push(handleElement);
+              }
+            }
+          }
+        });
+      });
+      nodeArchitecture["Nodes"].push(currentNode);
+    });
+
+    const edges = getEdges();
+    edges.forEach((edge) => {
+      const edgeItem = {
+        Source: edge.source,
+        Target: edge.target,
+        "Source Handle": edge.sourceHandle,
+        "Target Handle": edge.targetHandle,
+      };
+      nodeArchitecture["Edges"].push(edgeItem);
+    });
+
+    const requestObj = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ model: nodeArchitecture }),
+    };
+    fetch("http://127.0.0.1:8000/api/v1/update-architecture", requestObj);
+
+    setSelectedTab(1);
+  }
+
   return (
-    <div style={{ overflow: "hidden" }}>
+    <div
+      style={{
+        overflowX: "hidden",
+        overflowY: selectedTab === 1 ? "auto" : "hidden",
+      }}
+    >
       {/* Top Navbar */}
       <div className={styles["top-navbar"]}>
         <h1 className={styles["header"]}>LLMFlow</h1>
@@ -276,7 +371,7 @@ export default function App() {
           </button>
           <button
             className={selectedTab === 1 ? styles["active"] : ""}
-            onClick={() => setSelectedTab(1)}
+            onClick={() => updateTab()}
           >
             Live Preview
           </button>
@@ -329,41 +424,6 @@ export default function App() {
               </button>
             ))}
           </div>
-          {/*
-          <button
-            className={styles["button"]}
-            onClick={() => addAPINode("llms/openai")}
-          >
-            <OpenAIElement width="24px" height="24px" color="white" />
-          </button>
-
-          <button
-            className={styles["button"]}
-            onClick={() => addAPINode("llms/gemini")}
-          >
-            <GeminiElement width="24px" height="24px" color="white" />
-          </button>
-
-          <button
-            className={styles["button"]}
-            onClick={() => addAPINode("llms/ollama")}
-          >
-            <OllamaElement width="24px" height="24px" color="white" />
-          </button>
-
-          <button
-            className={styles["button"]}
-            onClick={() => addAPINode("inputs/text")}
-          >
-            <Rtt width="24px" height="24px" color="white" />
-          </button>
-
-          <button
-            className={styles["button"]}
-            onClick={() => addAPINode("outputs/text")}
-          >
-            <Rtt width="24px" height="24px" color="white" />
-          </button> */}
         </div>
         {/* Main Viewport */}
         <div
@@ -392,13 +452,8 @@ export default function App() {
         </div>
         <div
           style={{ display: selectedTab === 1 ? "block" : "none" }}
-          className={styles["main-viewport"]}
-        >
-          <gradio-app
-            src="http://127.0.0.1:8000/gradio"
-            className={styles["gradio-app"]}
-          ></gradio-app>
-        </div>
+          className={`${styles["main-viewport"]} gradio-element`}
+        ></div>
       </div>
     </div>
   );

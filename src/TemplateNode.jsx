@@ -51,7 +51,7 @@ function TemplateNode({ data, isConnectable, selected }) {
   }
 
   return (
-    <div className={nodeClassName}>
+    <div className={nodeClassName} id="node">
       <div>
         <div
           style={{
@@ -62,7 +62,7 @@ function TemplateNode({ data, isConnectable, selected }) {
           }}
         >
           <DynamicIcon iconName={data["icon"]} />
-          <label className="header-label" htmlFor="text">
+          <label id="name" className="header-label" htmlFor="text">
             {data["name"]}
           </label>
           <button className="hide-button" onClick={() => hideItems()}>

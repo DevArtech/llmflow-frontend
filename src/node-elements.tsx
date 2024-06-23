@@ -110,7 +110,6 @@ interface HandleElementProps {
   position: Position;
   isConnectable: any;
   style: any;
-  hidden?: boolean; // Unused
 }
 
 function getHexCode(colorName: string): string {
@@ -120,6 +119,7 @@ function getHexCode(colorName: string): string {
 export function HandleElement(props: HandleElementProps) {
   return (
     <div
+      id="handle"
       style={{
         color: "white",
         fontSize: "10px",
@@ -163,8 +163,11 @@ export function TextElement(props: { text: string; hidden?: boolean }) {
 }
 
 export function TextInput(props: TextInputProps) {
+  const [value, setValue] = React.useState<string>("");
+
   return (
     <div
+      id="data-item"
       onMouseEnter={() => props.disableDrag(true)}
       onMouseLeave={() => props.disableDrag(false)}
       style={{
@@ -180,14 +183,19 @@ export function TextInput(props: TextInputProps) {
         type={props.type ? props.type : "text"}
         placeholder={props.placeholder ? props.placeholder : ""}
         style={{ fontSize: "12px", width: "100%" }}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
       />
     </div>
   );
 }
 
 export function TextAreaInput(props: TextInputProps) {
+  const [value, setValue] = React.useState<string>("");
+
   return (
     <div
+      id="data-item"
       onMouseEnter={() => props.disableDrag(true)}
       onMouseLeave={() => props.disableDrag(false)}
       style={{ gap: "5px", display: props.hidden ? "none" : "flex" }}
@@ -210,14 +218,19 @@ export function TextAreaInput(props: TextInputProps) {
           e.currentTarget.style.height = "auto";
           e.currentTarget.style.height = `${e.currentTarget.scrollHeight}px`;
         }}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
       />
     </div>
   );
 }
 
 export function FileInput(props: FileInputProps) {
+  const [file, setFile] = React.useState<File | null>(null);
+
   return (
     <div
+      id="data-item"
       style={{
         display: props.hidden ? "none" : "flex",
         gap: "5px",
@@ -230,6 +243,7 @@ export function FileInput(props: FileInputProps) {
       <input
         type="file"
         style={{ fontSize: "12px", width: "100%", color: "white" }}
+        onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)}
       />
     </div>
   );
@@ -237,8 +251,10 @@ export function FileInput(props: FileInputProps) {
 
 export function RadioInput(props: RadioInputProps) {
   const [selected, setSelected] = React.useState(props.initial);
+
   return (
     <div
+      id="data-item"
       style={{
         display: props.hidden ? "none" : "flex",
         gap: "5px",
@@ -287,17 +303,14 @@ export function RadioInput(props: RadioInputProps) {
 }
 
 export function ColorInput(props: ColorInputProps) {
-  const [color, setColor] = React.useState(
-    getHexCode(props.initialColor ? props.initialColor : "black") ||
-      props.initialColor
-  );
-
+  const [color, setColor] = React.useState(props.initialColor);
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setColor(event.target.value);
   };
 
   return (
     <div
+      id="data-item"
       style={{
         display: props.hidden ? "none" : "flex",
         gap: "5px",
@@ -326,6 +339,7 @@ export function SliderInput(props: SliderInputProps) {
 
   return (
     <div
+      id="data-item"
       onMouseEnter={() => props.disableDrag(true)}
       onMouseLeave={() => props.disableDrag(false)}
       style={{
@@ -373,6 +387,7 @@ export function DropdownInput(props: DropdownInputProps) {
 
   return (
     <div
+      id="data-item"
       style={{
         display: props.hidden ? "none" : "flex",
         gap: "5px",
@@ -402,6 +417,7 @@ export function CheckboxInput(props: CheckboxInputProps) {
 
   return (
     <div
+      id="data-item"
       style={{
         display: props.hidden ? "none" : "flex",
         gap: "5px",
@@ -460,13 +476,13 @@ export function CheckboxInput(props: CheckboxInputProps) {
 
 export function DatetimeInput(props: DatetimeInputProps) {
   const [value, setValue] = React.useState(props.startingDate);
-
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setValue(event.target.value);
   };
 
   return (
     <div
+      id="data-item"
       style={{
         display: props.hidden ? "none" : "flex",
         gap: "5px",
@@ -487,16 +503,14 @@ export function DatetimeInput(props: DatetimeInputProps) {
 }
 
 export function NumberInput(props: NumberInputProps) {
-  const [value, setValue] = React.useState(
-    props.initial !== undefined ? props.initial : 0
-  );
-
+  const [value, setValue] = React.useState(props.initial);
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setValue(Number(event.target.value));
   };
 
   return (
     <div
+      id="data-item"
       onMouseEnter={() => props.disableDrag(true)}
       onMouseLeave={() => props.disableDrag(false)}
       style={{
@@ -573,6 +587,7 @@ export function BezierCurveInput(props: BezierCurveInputProps) {
 
   return (
     <div
+      id="data-item"
       onMouseEnter={() => props.disableDrag(true)}
       onMouseLeave={() => props.disableDrag(false)}
       style={{ display: props.hidden ? "none" : "default", cursor: "default" }}
