@@ -224,6 +224,19 @@ export default function App() {
         gradioContainer.style.overflowY = "auto";
       }
     }, 1);
+
+    async function updateGradio() {
+      setTimeout(() => {
+        const chatbotConversation = document.querySelector(
+          ".placeholder-container"
+        );
+        if (chatbotConversation) {
+          chatbotConversation.parentElement.parentElement.style.height = "55vh";
+        }
+      }, 250);
+    }
+
+    updateGradio();
   }, [selectedTab]);
 
   useEffect(() => {
@@ -299,7 +312,17 @@ export default function App() {
             if (id === "data-item") {
               const elements = Array.from(grandchild.children);
               const itemType = elements[0].innerText;
-              const itemValue = elements[1].value;
+              let itemValue = undefined;
+              if (elements[1].tagName.toLowerCase() === "fieldset") {
+                const value = elements[1].firstChild.firstChild.value;
+                if (value.toLowerCase() === "true") {
+                  itemValue = true;
+                } else {
+                  itemValue = false;
+                }
+              } else {
+                itemValue = elements[1].value;
+              }
               const item = { Type: itemType, Value: itemValue };
               currentNode["Items"].push(item);
             }

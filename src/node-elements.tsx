@@ -443,7 +443,7 @@ export function CheckboxInput(props: CheckboxInputProps) {
           <div style={{ textAlign: "center" }} key={index}>
             <input
               type="checkbox"
-              value={label}
+              value={states[index].toString()}
               name="group"
               style={{ fontSize: "12px", cursor: "pointer" }}
               checked={states[index]}
@@ -671,6 +671,12 @@ export function SmartElement(props: CustomIconElementProps) {
         style={{ color: props.color ? props.color : "white" }}
       />
     );
+  } else if (props.name === "text-chat") {
+    return (
+      <Icons.Chat style={{ color: props.color ? props.color : "white" }} />
+    );
+  } else if (props.name === "multimodal") {
+    return <Icons.Mms style={{ color: props.color ? props.color : "white" }} />;
   } else {
     if (!props.name) {
       return <Icons.Help style={{ color: "white" }} />;
