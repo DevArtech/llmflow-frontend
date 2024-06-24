@@ -211,33 +211,49 @@ export default function App() {
     newGradioApp.src = "http://127.0.0.1:8000/gradio";
     newGradioApp.className = "gradio-app";
     document.querySelector(".gradio-element").appendChild(newGradioApp);
+  }, [selectedTab]);
 
-    setTimeout(() => {
-      // Need to wait for Gradio to load before modifying styles
-      const gradioContainer = document.querySelector(".gradio-container");
-      if (gradioContainer) {
-        gradioContainer.style.margin = "0";
-        gradioContainer.style.border = "0";
-        gradioContainer.style.borderRadius = "0";
-        gradioContainer.style.height = "95vh";
-        gradioContainer.style.display = "block";
-        gradioContainer.style.overflowY = "auto";
-      }
-    }, 1);
-
-    async function updateGradio() {
+  useEffect(() => {
+    async function updateGradioCss() {
       setTimeout(() => {
-        const chatbotConversation = document.querySelector(
-          ".placeholder-container"
-        );
-        if (chatbotConversation) {
-          chatbotConversation.parentElement.parentElement.style.height = "55vh";
+        const gradioContainer = document.querySelector(".gradio-container");
+        if (gradioContainer) {
+          gradioContainer.style.margin = "0";
+          gradioContainer.style.border = "0";
+          gradioContainer.style.borderRadius = "0";
+          gradioContainer.style.height = "95vh";
+          gradioContainer.style.display = "block";
+          gradioContainer.style.overflowY = "auto";
         }
-      }, 250);
+
+        setTimeout(() => {
+          const chatbotConversation = document.querySelector(
+            ".placeholder-container"
+          );
+          if (chatbotConversation) {
+            chatbotConversation.parentElement.parentElement.style.height = "55vh";
+          }
+
+          const chatbotText = document.getElementById("chattext_2");
+          if (chatbotText) {
+            chatbotText.style.minWidth = "min(75vw, 100%)";
+          }
+        }, 100);
+      }, 10);
     }
 
-    updateGradio();
-  }, [selectedTab]);
+    updateGradioCss();
+  })
+
+  useEffect(() => {
+    const resetArchitecture = async () => {
+			await fetch("http://127.0.0.1:8000/api/v1/reset-architecture");
+		};
+		window.addEventListener('beforeunload', resetArchitecture);
+		return () => {
+			window.removeEventListener('beforeunload', resetArchitecture);
+		};
+  }, [])
 
   useEffect(() => {
     fetch("http://127.0.0.1:8000/api/v1/integrations")
