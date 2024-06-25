@@ -27,6 +27,7 @@ const rfStyle = {
 
 let id = 0;
 const getId = () => `${id++}`;
+const decrementId = () => `${id--}`;
 
 const MIN_DISTANCE = 100;
 
@@ -375,6 +376,39 @@ export default function App() {
     setSelectedTab(1);
   }
 
+  const onNodesDelete = (deletedNodes) => {
+    const deletedNodeId = deletedNodes[0]?.id;
+
+    let updatedEdges = edges.map((edge) => {
+      if (edge.source > deletedNodeId) {
+        edge.source -= 1;
+      }
+      if (edge.target > deletedNodeId) {
+        edge.target -= 1;
+      }
+      return edge;
+    });
+
+    updatedEdges = updatedEdges.filter((edge) => {
+      return edge.source !== deletedNodeId && edge.target !== deletedNodeId;
+    });
+
+    setEdges(updatedEdges);
+
+    const updatedNodes = nodes.map((node) => {
+      if (node.id > deletedNodeId) {
+        return {
+          ...node,
+          id: node.id - 1,
+        };
+      }
+      return node;
+    });
+    setNodes(updatedNodes);
+
+    decrementId();
+  };
+
   return (
     <div
       style={{
@@ -464,6 +498,7 @@ export default function App() {
             onConnectStart={onConnectStart}
             onConnectEnd={onConnectEnd}
             onNodeDragStop={onNodeDragStop}
+            onNodesDelete={onNodesDelete}
             defaultEdgeOptions={{ type: "smooth" }}
             nodeTypes={nodeTypes}
             style={rfStyle}
