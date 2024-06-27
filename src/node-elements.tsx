@@ -675,7 +675,7 @@ export function SmartElement(props: CustomIconElementProps) {
     return (
       <Icons.Chat style={{ color: props.color ? props.color : "white" }} />
     );
-  } else if (props.name === "multimodal") {
+  } else if (props.name === "multimodal-chat") {
     return <Icons.Mms style={{ color: props.color ? props.color : "white" }} />;
   } else {
     if (!props.name) {

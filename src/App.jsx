@@ -235,11 +235,11 @@ export default function App() {
           chatbotConversation.parentElement.parentElement.style.height = "55vh";
         }
 
-        const chatbotContainer = document.getElementById("chat_texbox");
-        if (chatbotContainer) {
-          chatbotContainer.style.minWidth = "min(75vw, 100%)";
+        const chatbotTextbox = document.getElementById("chat_texbox");
+        if (chatbotTextbox) {
+          chatbotTextbox.style.minWidth = "min(75vw, 100%)";
         }
-      }, 250);
+      }, 100);
     }
 
     updateGradio();
