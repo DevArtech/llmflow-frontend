@@ -234,6 +234,11 @@ export default function App() {
         if (chatbotConversation) {
           chatbotConversation.parentElement.parentElement.style.height = "55vh";
         }
+
+        const chatbotContainer = document.getElementById("chat_texbox");
+        if (chatbotContainer) {
+          chatbotContainer.style.minWidth = "min(75vw, 100%)";
+        }
       }, 250);
     }
 
