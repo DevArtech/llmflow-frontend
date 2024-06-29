@@ -12,6 +12,7 @@ import {
   DatetimeInput,
   BezierCurveInput,
   NumberInput,
+  TextAreaInput,
 } from "./node-elements.tsx";
 
 interface NodeBuilderProps {
@@ -90,6 +91,12 @@ export function NodeBuilder(props: NodeBuilderProps) {
         value.disableDrag = props.disableDrag;
       }
       nodeObj.push(<TextInput {...value} />);
+    }
+    if (key === "text-area" && value.label) {
+      if (!value.disableDrag) {
+        value.disableDrag = props.disableDrag;
+      }
+      nodeObj.push(<TextAreaInput {...value} />);
     }
     if (key === "file" && value.label) {
       nodeObj.push(<FileInput {...value} />);

@@ -211,7 +211,11 @@ export function TextAreaInput(props: TextInputProps) {
       id="data-item"
       onMouseEnter={() => props.disableDrag(true)}
       onMouseLeave={() => props.disableDrag(false)}
-      style={{ gap: "5px", display: props.hidden ? "none" : "flex" }}
+      style={{
+        gap: "5px",
+        display: props.hidden ? "none" : "flex",
+        marginBottom: "0.5rem",
+      }}
     >
       <label style={{ textWrap: "nowrap", textAlign: "left" }}>
         {props.label}
