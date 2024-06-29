@@ -208,41 +208,14 @@ export default function App() {
       gradioApp.remove();
     }
 
-    const newGradioApp = document.createElement("gradio-app");
+    const newGradioApp = document.createElement("iframe");
     newGradioApp.src = "http://127.0.0.1:8000/gradio";
+    newGradioApp.style.width = "100%";
+    newGradioApp.style.height = "95vh";
+    newGradioApp.style.border = "0";
     newGradioApp.className = "gradio-app";
+    newGradioApp.theme_mode = "dark";
     document.querySelector(".gradio-element").appendChild(newGradioApp);
-
-    setTimeout(() => {
-      // Need to wait for Gradio to load before modifying styles
-      const gradioContainer = document.querySelector(".gradio-container");
-      if (gradioContainer) {
-        gradioContainer.style.margin = "0";
-        gradioContainer.style.border = "0";
-        gradioContainer.style.borderRadius = "0";
-        gradioContainer.style.height = "95vh";
-        gradioContainer.style.display = "block";
-        gradioContainer.style.overflowY = "auto";
-      }
-    }, 1);
-
-    async function updateGradio() {
-      setTimeout(() => {
-        const chatbotConversation = document.querySelector(
-          ".placeholder-container"
-        );
-        if (chatbotConversation) {
-          chatbotConversation.parentElement.parentElement.style.height = "55vh";
-        }
-
-        const chatbotTextbox = document.getElementById("chat_texbox");
-        if (chatbotTextbox) {
-          chatbotTextbox.style.minWidth = "min(75vw, 100%)";
-        }
-      }, 100);
-    }
-
-    updateGradio();
   }, [selectedTab]);
 
   useEffect(() => {
@@ -326,6 +299,8 @@ export default function App() {
                 } else {
                   itemValue = false;
                 }
+              } else if (elements[1].tagName.toLowerCase() === "span") {
+                itemValue = elements[2].value;
               } else {
                 itemValue = elements[1].value;
               }
@@ -376,9 +351,16 @@ export default function App() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ model: nodeArchitecture }),
     };
-    fetch("http://127.0.0.1:8000/api/v1/update-architecture", requestObj);
-
-    setSelectedTab(1);
+    fetch("http://127.0.0.1:8000/api/v1/update-architecture", requestObj)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        response.json();
+      })
+      .then((result) => {
+        setSelectedTab(1);
+      });
   }
 
   const onNodesDelete = (deletedNodes) => {
@@ -417,8 +399,7 @@ export default function App() {
   return (
     <div
       style={{
-        overflowX: "hidden",
-        overflowY: selectedTab === 1 ? "auto" : "hidden",
+        overflow: "hidden",
       }}
     >
       {/* Top Navbar */}

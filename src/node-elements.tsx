@@ -1,6 +1,6 @@
-import React from "react";
 import { Handle, Position } from "reactflow";
 import * as Icons from "@mui/icons-material";
+import React from "react";
 
 const color_hex_map = {
   red: "#ff0000",
@@ -24,6 +24,7 @@ const color_hex_map = {
 
 interface TextInputProps {
   label: string;
+  required?: boolean;
   placeholder?: string;
   type?: string;
   disableDrag(disable: boolean): void;
@@ -32,11 +33,13 @@ interface TextInputProps {
 
 interface FileInputProps {
   label: string;
+  required?: boolean;
   hidden?: boolean;
 }
 
 interface RadioInputProps {
   label: string;
+  required?: boolean;
   options: string[];
   initial?: number;
   hidden?: boolean;
@@ -44,12 +47,14 @@ interface RadioInputProps {
 
 interface ColorInputProps {
   label: string;
+  required?: boolean;
   initialColor?: string;
   hidden?: boolean;
 }
 
 interface SliderInputProps {
   label: string;
+  required?: boolean;
   min: number;
   max: number;
   step: number;
@@ -60,6 +65,7 @@ interface SliderInputProps {
 
 interface DropdownInputProps {
   label: string;
+  required?: boolean;
   options: string[];
   initial?: string;
   hidden?: boolean;
@@ -67,6 +73,7 @@ interface DropdownInputProps {
 
 interface CheckboxInputProps {
   label: string;
+  required?: boolean;
   options: { labels: string[]; states: boolean[] };
   isToggle?: boolean;
   hidden?: boolean;
@@ -74,6 +81,7 @@ interface CheckboxInputProps {
 
 interface BezierCurveInputProps {
   label: string;
+  required?: boolean;
   initialHandles: { x: number; y: number }[];
   disableDrag(disable: boolean): void;
   maxX: number;
@@ -83,12 +91,14 @@ interface BezierCurveInputProps {
 
 interface DatetimeInputProps {
   label: string;
+  required?: boolean;
   startingDate: string;
   hidden?: boolean;
 }
 
 interface NumberInputProps {
   label: string;
+  required?: boolean;
   min?: number;
   max?: number;
   step?: number;
@@ -110,10 +120,6 @@ interface HandleElementProps {
   position: Position;
   isConnectable: any;
   style: any;
-}
-
-function getHexCode(colorName: string): string {
-  return color_hex_map[colorName] || "";
 }
 
 export function HandleElement(props: HandleElementProps) {
@@ -165,6 +171,12 @@ export function TextElement(props: { text: string; hidden?: boolean }) {
 export function TextInput(props: TextInputProps) {
   const [value, setValue] = React.useState<string>("");
 
+  React.useEffect(() => {
+    if (props.label === "API Key") {
+      setValue(process.env.REACT_APP_API_KEY || "");
+    }
+  }, []);
+
   return (
     <div
       id="data-item"
@@ -179,6 +191,7 @@ export function TextInput(props: TextInputProps) {
       <label style={{ textWrap: "nowrap", textAlign: "left" }}>
         {props.label}
       </label>
+      {props.required && <span style={{ color: "red" }}>*</span>}
       <input
         type={props.type ? props.type : "text"}
         placeholder={props.placeholder ? props.placeholder : ""}
@@ -203,6 +216,7 @@ export function TextAreaInput(props: TextInputProps) {
       <label style={{ textWrap: "nowrap", textAlign: "left" }}>
         {props.label}
       </label>
+      {props.required && <span style={{ color: "red" }}>*</span>}
       <textarea
         placeholder={props.placeholder ? props.placeholder : ""}
         style={{
@@ -240,6 +254,7 @@ export function FileInput(props: FileInputProps) {
       <label style={{ textWrap: "nowrap", textAlign: "left" }}>
         {props.label}
       </label>
+      {props.required && <span style={{ color: "red" }}>*</span>}
       <input
         type="file"
         style={{ fontSize: "12px", width: "100%", color: "white" }}
@@ -265,6 +280,7 @@ export function RadioInput(props: RadioInputProps) {
       <label style={{ textWrap: "nowrap", textAlign: "left" }}>
         {props.label}
       </label>
+      {props.required && <span style={{ color: "red" }}>*</span>}
       <fieldset
         style={{
           border: "none",
@@ -320,6 +336,7 @@ export function ColorInput(props: ColorInputProps) {
       <label style={{ textWrap: "nowrap", textAlign: "left" }}>
         {props.label}
       </label>
+      {props.required && <span style={{ color: "red" }}>*</span>}
       <input
         type="color"
         value={color}
@@ -351,6 +368,7 @@ export function SliderInput(props: SliderInputProps) {
       <label style={{ textWrap: "nowrap", textAlign: "left" }}>
         {props.label}
       </label>
+      {props.required && <span style={{ color: "red" }}>*</span>}
       <input
         type="range"
         min={props.min}
@@ -397,6 +415,7 @@ export function DropdownInput(props: DropdownInputProps) {
       <label style={{ textWrap: "nowrap", textAlign: "left" }}>
         {props.label}
       </label>
+      {props.required && <span style={{ color: "red" }}>*</span>}
       <select
         style={{ fontSize: "12px", width: "100%", cursor: "pointer" }}
         value={selection}
@@ -428,6 +447,7 @@ export function CheckboxInput(props: CheckboxInputProps) {
       <label style={{ textWrap: "nowrap", textAlign: "left" }}>
         {props.label}
       </label>
+      {props.required && <span style={{ color: "red" }}>*</span>}
       <fieldset
         style={{
           border: "none",
@@ -492,6 +512,7 @@ export function DatetimeInput(props: DatetimeInputProps) {
       <label style={{ textWrap: "nowrap", textAlign: "left" }}>
         {props.label}
       </label>
+      {props.required && <span style={{ color: "red" }}>*</span>}
       <input
         type="datetime-local"
         value={value}
@@ -522,6 +543,7 @@ export function NumberInput(props: NumberInputProps) {
       <label style={{ textWrap: "nowrap", textAlign: "left" }}>
         {props.label}
       </label>
+      {props.required && <span style={{ color: "red" }}>*</span>}
       <input
         type="number"
         value={value}
@@ -593,6 +615,7 @@ export function BezierCurveInput(props: BezierCurveInputProps) {
       style={{ display: props.hidden ? "none" : "default", cursor: "default" }}
     >
       <label>{props.label}</label>
+      {props.required && <span style={{ color: "red" }}>*</span>}
       <svg
         ref={svgRef}
         width="300"
