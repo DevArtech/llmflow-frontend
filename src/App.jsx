@@ -11,6 +11,7 @@ import ReactFlow, {
   useReactFlow,
   useStoreApi,
   applyNodeChanges,
+  applyEdgeChanges,
 } from "reactflow";
 import { useEffect } from "react";
 
@@ -55,13 +56,85 @@ export default function App() {
   const initialEdges = [];
 
   const [nodes, setNodes] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [edges, setEdges] = useEdgesState(initialEdges);
 
   const onConnect = useCallback(
     (params) => {
       // reset the start node on connections
       connectingNodeId.current = null;
+      if (params.targetHandle.includes("element")) {
+        if (params.targetHandle.includes("element")) {
+          const targetElement = document.querySelector(
+            `[data-id="${params.target}"]`
+          );
+          if (targetElement) {
+            const elements = targetElement.firstChild.firstChild.children;
+            Array.from(elements).forEach((element) => {
+              const item = element.firstChild;
+              if (
+                item.id === "data-item" &&
+                item.firstChild.hasAttribute("data-handleid") &&
+                item.firstChild.getAttribute("data-handleid") ===
+                  params.targetHandle
+              ) {
+                const itemChildren = Array.from(item.children);
+                itemChildren.forEach((child) => {
+                  if (child.tagName.toLowerCase() === "input") {
+                    child.disabled = true;
+                  }
+                  if (child.tagName.toLowerCase() === "select") {
+                    child.disabled = true;
+                  }
+                  if (child.tagName.toLowerCase() === "textarea") {
+                    child.disabled = true;
+                  }
+                });
+              }
+            });
+          }
+        }
+      }
       setEdges((eds) => addEdge(params, eds));
+    },
+    [setEdges]
+  );
+
+  const onDisconnect = useCallback(
+    (params) => {
+      // reset the start node on connections
+      connectingNodeId.current = null;
+      if (params.targetHandle.includes("element")) {
+        if (params.targetHandle.includes("element")) {
+          const targetElement = document.querySelector(
+            `[data-id="${params.target}"]`
+          );
+          if (targetElement) {
+            const elements = targetElement.firstChild.firstChild.children;
+            Array.from(elements).forEach((element) => {
+              const item = element.firstChild;
+              if (
+                item.id === "data-item" &&
+                item.firstChild.hasAttribute("data-handleid") &&
+                item.firstChild.getAttribute("data-handleid") ===
+                  params.targetHandle
+              ) {
+                const itemChildren = Array.from(item.children);
+                itemChildren.forEach((child) => {
+                  if (child.tagName.toLowerCase() === "input") {
+                    child.disabled = true;
+                  }
+                  if (child.tagName.toLowerCase() === "select") {
+                    child.disabled = true;
+                  }
+                  if (child.tagName.toLowerCase() === "textarea") {
+                    child.disabled = true;
+                  }
+                });
+              }
+            });
+          }
+        }
+      }
     },
     [setEdges]
   );
@@ -169,6 +242,51 @@ export default function App() {
     [setEdges, getClosestEdge]
   );
 
+  const onEdgesChange = (edges) => {
+    edges.forEach((edge) => {
+      if (edge.type === "remove") {
+        const id = edge.id.replace("reactflow__edge-", "");
+        const match = id.match(/(\d+)([A-Za-z]+)-(\d+)([A-Za-z0-9_]+)/);
+        if (match) {
+          const [_, source, sourceHandle, target, targetHandle] = match;
+          if (targetHandle.includes("element")) {
+            if (targetHandle.includes("element")) {
+              const targetElement = document.querySelector(
+                `[data-id="${target}"]`
+              );
+              if (targetElement) {
+                const elements = targetElement.firstChild.firstChild.children;
+                Array.from(elements).forEach((element) => {
+                  const item = element.firstChild;
+                  if (
+                    item.id === "data-item" &&
+                    item.firstChild.hasAttribute("data-handleid") &&
+                    item.firstChild.getAttribute("data-handleid") ===
+                      targetHandle
+                  ) {
+                    const itemChildren = Array.from(item.children);
+                    itemChildren.forEach((child) => {
+                      if (child.tagName.toLowerCase() === "input") {
+                        child.removeAttribute("disabled");
+                      }
+                      if (child.tagName.toLowerCase() === "select") {
+                        child.removeAttribute("disabled");
+                      }
+                      if (child.tagName.toLowerCase() === "textarea") {
+                        child.removeAttribute("disabled");
+                      }
+                    });
+                  }
+                });
+              }
+            }
+          }
+        }
+      }
+    });
+    setEdges((eds) => applyEdgeChanges(edges, eds));
+  };
+
   const onNodesChange = (changes) => {
     setNodes((nds) => applyNodeChanges(changes, nds));
   };
@@ -271,7 +389,7 @@ export default function App() {
 
   function updateTab() {
     const nodes = document.querySelectorAll("#node");
-    let nodeArchitecture = { Nodes: [], Edges: [] };
+    let nodeArchitecture = { Nodes: [], Edges: [], ParameterEdges: [] };
     nodes.forEach((node) => {
       let currentNode = {
         Id: node.parentNode.getAttribute("data-id"),
@@ -289,7 +407,26 @@ export default function App() {
               currentNode["Name"] = grandchild.innerText;
             }
             if (id === "data-item") {
-              const elements = Array.from(grandchild.children);
+              let elements = Array.from(grandchild.children);
+              if (elements[0] && elements[0].hasAttribute("data-handleid")) {
+                if (elements[0].getAttribute("data-id").includes("source")) {
+                  const handleElement = {
+                    name: elements[0].getAttribute("data-handleid"),
+                    type: "source",
+                  };
+                  currentNode["Handles"].push(handleElement);
+                } else if (
+                  elements[0].getAttribute("data-id").includes("target")
+                ) {
+                  const handleElement = {
+                    name: elements[0].getAttribute("data-handleid"),
+                    type: "target",
+                  };
+                  currentNode["Handles"].push(handleElement);
+                }
+                elements = elements.slice(1);
+              }
+
               const itemType = elements[0].innerText;
               let itemValue = undefined;
               if (elements[1].tagName.toLowerCase() === "fieldset") {
@@ -343,7 +480,9 @@ export default function App() {
         "Source Handle": edge.sourceHandle,
         "Target Handle": edge.targetHandle,
       };
-      nodeArchitecture["Edges"].push(edgeItem);
+      nodeArchitecture[
+        edge.targetHandle.includes("element") ? "ParameterEdges" : "Edges"
+      ].push(edgeItem);
     });
 
     const requestObj = {
@@ -395,6 +534,12 @@ export default function App() {
 
     decrementId();
   };
+
+  // const onDisconnect = useCallback(
+  //   (connections: Connection[]) =>
+  //     console.log("onDisconnect handler, node id:", nodeId, connections),
+  //   [nodeId]
+  // );
 
   return (
     <div
@@ -481,6 +626,7 @@ export default function App() {
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
+            onDisconnect={onDisconnect}
             onConnectStart={onConnectStart}
             onConnectEnd={onConnectEnd}
             onNodeDragStop={onNodeDragStop}

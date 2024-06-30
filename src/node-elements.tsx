@@ -29,12 +29,24 @@ interface TextInputProps {
   type?: string;
   disableDrag(disable: boolean): void;
   hidden?: boolean;
+  hasHandle?: boolean;
+  handleId?: string;
+  handleType?: "target" | "source";
+  handlePosition?: Position;
+  handleIsConnectable?: any;
+  handleStyle?: any;
 }
 
 interface FileInputProps {
   label: string;
   required?: boolean;
   hidden?: boolean;
+  hasHandle?: boolean;
+  handleId?: string;
+  handleType?: "target" | "source";
+  handlePosition?: Position;
+  handleIsConnectable?: any;
+  handleStyle?: any;
 }
 
 interface RadioInputProps {
@@ -43,6 +55,12 @@ interface RadioInputProps {
   options: string[];
   initial?: number;
   hidden?: boolean;
+  hasHandle?: boolean;
+  handleId?: string;
+  handleType?: "target" | "source";
+  handlePosition?: Position;
+  handleIsConnectable?: any;
+  handleStyle?: any;
 }
 
 interface ColorInputProps {
@@ -50,6 +68,12 @@ interface ColorInputProps {
   required?: boolean;
   initialColor?: string;
   hidden?: boolean;
+  hasHandle?: boolean;
+  handleId?: string;
+  handleType?: "target" | "source";
+  handlePosition?: Position;
+  handleIsConnectable?: any;
+  handleStyle?: any;
 }
 
 interface SliderInputProps {
@@ -61,6 +85,12 @@ interface SliderInputProps {
   initial?: number;
   disableDrag(disable: boolean): void;
   hidden?: boolean;
+  hasHandle?: boolean;
+  handleId?: string;
+  handleType?: "target" | "source";
+  handlePosition?: Position;
+  handleIsConnectable?: any;
+  handleStyle?: any;
 }
 
 interface DropdownInputProps {
@@ -69,6 +99,12 @@ interface DropdownInputProps {
   options: string[];
   initial?: string;
   hidden?: boolean;
+  hasHandle?: boolean;
+  handleId?: string;
+  handleType?: "target" | "source";
+  handlePosition?: Position;
+  handleIsConnectable?: any;
+  handleStyle?: any;
 }
 
 interface CheckboxInputProps {
@@ -77,6 +113,12 @@ interface CheckboxInputProps {
   options: { labels: string[]; states: boolean[] };
   isToggle?: boolean;
   hidden?: boolean;
+  hasHandle?: boolean;
+  handleId?: string;
+  handleType?: "target" | "source";
+  handlePosition?: Position;
+  handleIsConnectable?: any;
+  handleStyle?: any;
 }
 
 interface BezierCurveInputProps {
@@ -87,6 +129,12 @@ interface BezierCurveInputProps {
   maxX: number;
   maxY: number;
   hidden?: boolean;
+  hasHandle?: boolean;
+  handleId?: string;
+  handleType?: "target" | "source";
+  handlePosition?: Position;
+  handleIsConnectable?: any;
+  handleStyle?: any;
 }
 
 interface DatetimeInputProps {
@@ -94,6 +142,12 @@ interface DatetimeInputProps {
   required?: boolean;
   startingDate: string;
   hidden?: boolean;
+  hasHandle?: boolean;
+  handleId?: string;
+  handleType?: "target" | "source";
+  handlePosition?: Position;
+  handleIsConnectable?: any;
+  handleStyle?: any;
 }
 
 interface NumberInputProps {
@@ -105,6 +159,12 @@ interface NumberInputProps {
   initial?: number;
   disableDrag(disable: boolean): void;
   hidden?: boolean;
+  hasHandle?: boolean;
+  handleId?: string;
+  handleType?: "target" | "source";
+  handlePosition?: Position;
+  handleIsConnectable?: any;
+  handleStyle?: any;
 }
 
 interface CustomIconElementProps {
@@ -116,6 +176,7 @@ interface CustomIconElementProps {
 
 interface HandleElementProps {
   label: string;
+  handleId?: string;
   type: "target" | "source";
   position: Position;
   isConnectable: any;
@@ -188,6 +249,15 @@ export function TextInput(props: TextInputProps) {
         display: props.hidden ? "none" : "flex",
       }}
     >
+      {props.hasHandle && (
+        <Handle
+          type={props.handleType ? props.handleType : "source"}
+          position={props.handlePosition ? props.handlePosition : Position.Left}
+          id={`element_${props.handleId}`}
+          isConnectable={props.handleIsConnectable}
+          style={props.handleStyle}
+        />
+      )}
       <label style={{ textWrap: "nowrap", textAlign: "left" }}>
         {props.label}
       </label>
@@ -217,6 +287,15 @@ export function TextAreaInput(props: TextInputProps) {
         marginBottom: "0.5rem",
       }}
     >
+      {props.hasHandle && (
+        <Handle
+          type={props.handleType ? props.handleType : "source"}
+          position={props.handlePosition ? props.handlePosition : Position.Left}
+          id={`element_${props.handleId}`}
+          isConnectable={props.handleIsConnectable}
+          style={props.handleStyle}
+        />
+      )}
       <label style={{ textWrap: "nowrap", textAlign: "left" }}>
         {props.label}
       </label>
@@ -255,6 +334,15 @@ export function FileInput(props: FileInputProps) {
         alignItems: "center",
       }}
     >
+      {props.hasHandle && (
+        <Handle
+          type={props.handleType ? props.handleType : "source"}
+          position={props.handlePosition ? props.handlePosition : Position.Left}
+          id={`element_${props.handleId}`}
+          isConnectable={props.handleIsConnectable}
+          style={props.handleStyle}
+        />
+      )}
       <label style={{ textWrap: "nowrap", textAlign: "left" }}>
         {props.label}
       </label>
@@ -281,6 +369,15 @@ export function RadioInput(props: RadioInputProps) {
         marginBottom: "1rem",
       }}
     >
+      {props.hasHandle && (
+        <Handle
+          type={props.handleType ? props.handleType : "source"}
+          position={props.handlePosition ? props.handlePosition : Position.Left}
+          id={`element_${props.handleId}`}
+          isConnectable={props.handleIsConnectable}
+          style={props.handleStyle}
+        />
+      )}
       <label style={{ textWrap: "nowrap", textAlign: "left" }}>
         {props.label}
       </label>
@@ -337,6 +434,15 @@ export function ColorInput(props: ColorInputProps) {
         alignItems: "center",
       }}
     >
+      {props.hasHandle && (
+        <Handle
+          type={props.handleType ? props.handleType : "source"}
+          position={props.handlePosition ? props.handlePosition : Position.Left}
+          id={`element_${props.handleId}`}
+          isConnectable={props.handleIsConnectable}
+          style={props.handleStyle}
+        />
+      )}
       <label style={{ textWrap: "nowrap", textAlign: "left" }}>
         {props.label}
       </label>
@@ -369,6 +475,15 @@ export function SliderInput(props: SliderInputProps) {
         alignItems: "center",
       }}
     >
+      {props.hasHandle && (
+        <Handle
+          type={props.handleType ? props.handleType : "source"}
+          position={props.handlePosition ? props.handlePosition : Position.Left}
+          id={`element_${props.handleId}`}
+          isConnectable={props.handleIsConnectable}
+          style={props.handleStyle}
+        />
+      )}
       <label style={{ textWrap: "nowrap", textAlign: "left" }}>
         {props.label}
       </label>
@@ -416,6 +531,15 @@ export function DropdownInput(props: DropdownInputProps) {
         alignItems: "center",
       }}
     >
+      {props.hasHandle && (
+        <Handle
+          type={props.handleType ? props.handleType : "source"}
+          position={props.handlePosition ? props.handlePosition : Position.Left}
+          id={`element_${props.handleId}`}
+          isConnectable={props.handleIsConnectable}
+          style={props.handleStyle}
+        />
+      )}
       <label style={{ textWrap: "nowrap", textAlign: "left" }}>
         {props.label}
       </label>
@@ -448,6 +572,15 @@ export function CheckboxInput(props: CheckboxInputProps) {
         marginBottom: props.options["labels"].length > 1 ? "0.5rem" : "0",
       }}
     >
+      {props.hasHandle && (
+        <Handle
+          type={props.handleType ? props.handleType : "source"}
+          position={props.handlePosition ? props.handlePosition : Position.Left}
+          id={`element_${props.handleId}`}
+          isConnectable={props.handleIsConnectable}
+          style={props.handleStyle}
+        />
+      )}
       <label style={{ textWrap: "nowrap", textAlign: "left" }}>
         {props.label}
       </label>
@@ -513,6 +646,15 @@ export function DatetimeInput(props: DatetimeInputProps) {
         alignItems: "center",
       }}
     >
+      {props.hasHandle && (
+        <Handle
+          type={props.handleType ? props.handleType : "source"}
+          position={props.handlePosition ? props.handlePosition : Position.Left}
+          id={`element_${props.handleId}`}
+          isConnectable={props.handleIsConnectable}
+          style={props.handleStyle}
+        />
+      )}
       <label style={{ textWrap: "nowrap", textAlign: "left" }}>
         {props.label}
       </label>
@@ -544,6 +686,15 @@ export function NumberInput(props: NumberInputProps) {
         alignItems: "center",
       }}
     >
+      {props.hasHandle && (
+        <Handle
+          type={props.handleType ? props.handleType : "source"}
+          position={props.handlePosition ? props.handlePosition : Position.Left}
+          id={`element_${props.handleId}`}
+          isConnectable={props.handleIsConnectable}
+          style={props.handleStyle}
+        />
+      )}
       <label style={{ textWrap: "nowrap", textAlign: "left" }}>
         {props.label}
       </label>
@@ -618,6 +769,15 @@ export function BezierCurveInput(props: BezierCurveInputProps) {
       onMouseLeave={() => props.disableDrag(false)}
       style={{ display: props.hidden ? "none" : "default", cursor: "default" }}
     >
+      {props.hasHandle && (
+        <Handle
+          type={props.handleType ? props.handleType : "source"}
+          position={props.handlePosition ? props.handlePosition : Position.Left}
+          id={`element_${props.handleId}`}
+          isConnectable={props.handleIsConnectable}
+          style={props.handleStyle}
+        />
+      )}
       <label>{props.label}</label>
       {props.required && <span style={{ color: "red" }}>*</span>}
       <svg

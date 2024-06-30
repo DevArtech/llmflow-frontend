@@ -76,6 +76,7 @@ export function NodeBuilder(props: NodeBuilderProps) {
     return [];
   }
 
+  let i = 0;
   for (let item in props.items) {
     let key = Object.keys(props.items[item])[0];
     let value = Object.values(props.items[item])[0];
@@ -90,50 +91,52 @@ export function NodeBuilder(props: NodeBuilderProps) {
       if (!value.disableDrag) {
         value.disableDrag = props.disableDrag;
       }
-      nodeObj.push(<TextInput {...value} />);
+      nodeObj.push(<TextInput {...value} handleId={i} />);
     }
     if (key === "text-area" && value.label) {
       if (!value.disableDrag) {
         value.disableDrag = props.disableDrag;
       }
-      nodeObj.push(<TextAreaInput {...value} />);
+      nodeObj.push(<TextAreaInput {...value} handleId={i} />);
     }
     if (key === "file" && value.label) {
-      nodeObj.push(<FileInput {...value} />);
+      nodeObj.push(<FileInput {...value} handleId={i} />);
     }
     if (key === "radio" && value.label) {
-      nodeObj.push(<RadioInput {...value} />);
+      nodeObj.push(<RadioInput {...value} handleId={i} />);
     }
     if (key === "color" && value.label) {
-      nodeObj.push(<ColorInput {...value} />);
+      nodeObj.push(<ColorInput {...value} handleId={i} />);
     }
     if (key === "slider" && value.label) {
       if (!value.disableDrag) {
         value.disableDrag = props.disableDrag;
       }
-      nodeObj.push(<SliderInput {...value} />);
+      nodeObj.push(<SliderInput {...value} handleId={i} />);
     }
     if (key === "dropdown" && value.label) {
-      nodeObj.push(<DropdownInput {...value} />);
+      nodeObj.push(<DropdownInput {...value} handleId={i} />);
     }
     if (key === "checkbox" && value.label) {
-      nodeObj.push(<CheckboxInput {...value} />);
+      nodeObj.push(<CheckboxInput {...value} handleId={i} />);
     }
     if (key === "datetime" && value.label) {
-      nodeObj.push(<DatetimeInput {...value} />);
+      nodeObj.push(<DatetimeInput {...value} handleId={i} />);
     }
     if (key === "bezierCurve" && value.label) {
       if (!value.disableDrag) {
         value.disableDrag = props.disableDrag;
       }
-      nodeObj.push(<BezierCurveInput {...value} />);
+      nodeObj.push(<BezierCurveInput {...value} handleId={i} />);
     }
     if (key === "number" && value.label) {
       if (!value.disableDrag) {
         value.disableDrag = props.disableDrag;
       }
-      nodeObj.push(<NumberInput {...value} />);
+      nodeObj.push(<NumberInput {...value} handleId={i} />);
     }
+
+    i++;
   }
 
   return nodeObj;
