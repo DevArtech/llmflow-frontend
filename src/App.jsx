@@ -1,6 +1,7 @@
 import React, { useCallback, useRef, useState } from "react";
 import { SmartElement } from "./node-elements.tsx";
 import { NodeBuilder } from "./node-builder.tsx";
+import Tooltip from "./tooltip.tsx";
 import ReactFlow, {
   MiniMap,
   Controls,
@@ -349,23 +350,31 @@ export default function App() {
               result["options"].forEach((option) => {
                 newIntegrationButtons.push(
                   <button
-                    id={integration}
-                    key={option}
+                    id={`${integration}/${option["name"]
+                      .toLowerCase()
+                      .replace(" ", "-")}`}
+                    key={option["name"]}
                     className={styles["button"]}
                     onClick={() =>
                       addAPINode(
                         integration.toLowerCase(),
-                        option.toLowerCase()
+                        option["name"].toLowerCase()
                       )
                     }
                     onMouseEnter={() => setIntegrationOptionHovered(true)}
                     onMouseLeave={() => setIntegrationOptionHovered(false)}
                   >
                     <SmartElement
-                      name={option.toLowerCase()}
+                      name={option["name"].toLowerCase()}
                       width="24px"
                       height="24px"
                       color="white"
+                    />
+                    <Tooltip
+                      content={option["detail"]}
+                      targetId={`${integration}/${option["name"]
+                        .toLowerCase()
+                        .replace(" ", "-")}`}
                     />
                   </button>
                 );
@@ -495,7 +504,6 @@ export default function App() {
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
-        response.json();
       })
       .then((result) => {
         setSelectedTab(1);
@@ -603,7 +611,8 @@ export default function App() {
                   }}
                 >
                   {integrationButtons.map((button, index) => {
-                    if (button.props.id === integration) {
+                    const buttonIntegration = button.props.id.split("/")[0];
+                    if (buttonIntegration === integration) {
                       return button;
                     }
                     return null;
