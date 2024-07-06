@@ -358,7 +358,7 @@ export default function App() {
                     onClick={() =>
                       addAPINode(
                         integration.toLowerCase(),
-                        option["name"].toLowerCase()
+                        option["name"].toLowerCase().replace(" ", "-")
                       )
                     }
                     onMouseEnter={() => setIntegrationOptionHovered(true)}

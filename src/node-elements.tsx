@@ -303,6 +303,7 @@ export function TextAreaInput(props: TextInputProps) {
       <textarea
         placeholder={props.placeholder ? props.placeholder : ""}
         style={{
+          marginTop: "5px",
           fontSize: "12px",
           width: "100%",
           resize: "none",
@@ -864,6 +865,14 @@ export function SmartElement(props: CustomIconElementProps) {
     );
   } else if (props.name === "multimodal-chat") {
     return <Icons.Mms style={{ color: props.color ? props.color : "white" }} />;
+  } else if (props.name === "system prompt") {
+    return (
+      <Icons.Terminal style={{ color: props.color ? props.color : "white" }} />
+    );
+  } else if (props.name === "chat constructor") {
+    return (
+      <Icons.Build style={{ color: props.color ? props.color : "white" }} />
+    );
   } else {
     if (!props.name) {
       return <Icons.Help style={{ color: "white" }} />;
