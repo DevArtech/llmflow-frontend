@@ -398,7 +398,7 @@ export default function App() {
 
   function updateTab() {
     const nodes = document.querySelectorAll("#node");
-    let nodeArchitecture = { Nodes: [], Edges: [], ParameterEdges: [] };
+    let nodeArchitecture = { Nodes: [], Edges: [] };
     nodes.forEach((node) => {
       let currentNode = {
         Id: node.parentNode.getAttribute("data-id"),
@@ -488,10 +488,9 @@ export default function App() {
         Target: edge.target,
         "Source Handle": edge.sourceHandle,
         "Target Handle": edge.targetHandle,
+        Type: edge.targetHandle.includes("element") ? "Data" : "Normal",
       };
-      nodeArchitecture[
-        edge.targetHandle.includes("element") ? "ParameterEdges" : "Edges"
-      ].push(edgeItem);
+      nodeArchitecture["Edges"].push(edgeItem);
     });
 
     const requestObj = {
