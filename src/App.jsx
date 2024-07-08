@@ -1,7 +1,7 @@
 import React, { useCallback, useRef, useState } from "react";
-import { SmartElement } from "./node-elements.tsx";
+import { SmartElement } from "./components/node-elements.tsx";
 import { NodeBuilder } from "./node-builder.tsx";
-import Tooltip from "./tooltip.tsx";
+import Tooltip from "./components/tooltip.tsx";
 import ReactFlow, {
   MiniMap,
   Controls,
