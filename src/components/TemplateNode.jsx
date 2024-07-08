@@ -4,7 +4,7 @@ import {
   GeminiElement,
   OllamaElement,
   OpenAIElement,
-} from "./components/node-elements.tsx";
+} from "./node-elements.tsx";
 
 const DynamicIcon = ({ iconName, color }) => {
   if (iconName === "OpenAI") {

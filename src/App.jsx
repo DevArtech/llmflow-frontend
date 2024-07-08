@@ -1,6 +1,6 @@
 import React, { useCallback, useRef, useState } from "react";
 import { SmartElement } from "./components/node-elements.tsx";
-import { NodeBuilder } from "./node-builder.tsx";
+import { NodeBuilder } from "./components/node-builder.tsx";
 import Tooltip from "./components/tooltip.tsx";
 import ReactFlow, {
   MiniMap,
@@ -18,8 +18,8 @@ import { useEffect } from "react";
 
 import "reactflow/dist/style.css";
 
-import TemplateNode from "./TemplateNode.jsx";
-import "./template-node.css";
+import TemplateNode from "./components/TemplateNode.jsx";
+import "./components/template-node.css";
 
 import styles from "./App.module.css";
 
