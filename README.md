@@ -11,3 +11,14 @@ LLMFlow - A programming language for LLM Apps
 
 Application should start up on http://localhost:3000.  
 For full frontend capabilities, back sure the [backend](https://github.com/DevArtech/llmflow-backend) is also running on http://localhost:8000
+
+### Using environment variables
+
+1. Create a .env file in the root directory
+2. Fill out the following environment variables if you wish to use them:
+
+```
+REACT_APP_API_KEY="[insert API key here]"
+```
+
+All nodes which use the above variables will be automatically prefilled with the environment variable.
