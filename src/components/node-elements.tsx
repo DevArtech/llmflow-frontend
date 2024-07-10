@@ -27,10 +27,10 @@ interface TextInputProps {
   required?: boolean;
   placeholder?: string;
   type?: string;
-  disableDrag(disable: boolean): void;
+  disableDrag?(disable: boolean): void;
   hidden?: boolean;
   hasHandle?: boolean;
-  handleId?: string;
+  handleId?: string | number;
   handleType?: "target" | "source";
   handlePosition?: Position;
   handleIsConnectable?: any;
@@ -42,7 +42,7 @@ interface FileInputProps {
   required?: boolean;
   hidden?: boolean;
   hasHandle?: boolean;
-  handleId?: string;
+  handleId?: string | number;
   handleType?: "target" | "source";
   handlePosition?: Position;
   handleIsConnectable?: any;
@@ -52,11 +52,11 @@ interface FileInputProps {
 interface RadioInputProps {
   label: string;
   required?: boolean;
-  options: string[];
-  initial?: number;
+  options?: string[] | { labels: string[]; states: boolean[]; };
+  initial?: number | string;
   hidden?: boolean;
   hasHandle?: boolean;
-  handleId?: string;
+  handleId?: string | number;
   handleType?: "target" | "source";
   handlePosition?: Position;
   handleIsConnectable?: any;
@@ -69,7 +69,7 @@ interface ColorInputProps {
   initialColor?: string;
   hidden?: boolean;
   hasHandle?: boolean;
-  handleId?: string;
+  handleId?: string | number;
   handleType?: "target" | "source";
   handlePosition?: Position;
   handleIsConnectable?: any;
@@ -79,14 +79,14 @@ interface ColorInputProps {
 interface SliderInputProps {
   label: string;
   required?: boolean;
-  min: number;
-  max: number;
-  step: number;
-  initial?: number;
-  disableDrag(disable: boolean): void;
+  min?: number;
+  max?: number;
+  step?: number;
+  initial?: number | string;
+  disableDrag?(disable: boolean): void;
   hidden?: boolean;
   hasHandle?: boolean;
-  handleId?: string;
+  handleId?: string | number;
   handleType?: "target" | "source";
   handlePosition?: Position;
   handleIsConnectable?: any;
@@ -96,11 +96,11 @@ interface SliderInputProps {
 interface DropdownInputProps {
   label: string;
   required?: boolean;
-  options: string[];
-  initial?: string;
+  options?: string[] | { labels: string[]; states: boolean[]; };
+  initial?: string | number;
   hidden?: boolean;
   hasHandle?: boolean;
-  handleId?: string;
+  handleId?: string | number;
   handleType?: "target" | "source";
   handlePosition?: Position;
   handleIsConnectable?: any;
@@ -110,11 +110,11 @@ interface DropdownInputProps {
 interface CheckboxInputProps {
   label: string;
   required?: boolean;
-  options: { labels: string[]; states: boolean[] };
+  options?: string[] | { labels: string[]; states: boolean[] };
   isToggle?: boolean;
   hidden?: boolean;
   hasHandle?: boolean;
-  handleId?: string;
+  handleId?: string | number;
   handleType?: "target" | "source";
   handlePosition?: Position;
   handleIsConnectable?: any;
@@ -124,13 +124,13 @@ interface CheckboxInputProps {
 interface BezierCurveInputProps {
   label: string;
   required?: boolean;
-  initialHandles: { x: number; y: number }[];
-  disableDrag(disable: boolean): void;
-  maxX: number;
-  maxY: number;
+  initialHandles?: { x: number; y: number }[];
+  disableDrag?(disable: boolean): void;
+  maxX?: number;
+  maxY?: number;
   hidden?: boolean;
   hasHandle?: boolean;
-  handleId?: string;
+  handleId?: string | number;
   handleType?: "target" | "source";
   handlePosition?: Position;
   handleIsConnectable?: any;
@@ -140,10 +140,10 @@ interface BezierCurveInputProps {
 interface DatetimeInputProps {
   label: string;
   required?: boolean;
-  startingDate: string;
+  startingDate?: string;
   hidden?: boolean;
   hasHandle?: boolean;
-  handleId?: string;
+  handleId?: string | number;
   handleType?: "target" | "source";
   handlePosition?: Position;
   handleIsConnectable?: any;
@@ -156,11 +156,11 @@ interface NumberInputProps {
   min?: number;
   max?: number;
   step?: number;
-  initial?: number;
-  disableDrag(disable: boolean): void;
+  initial?: number | string;
+  disableDrag?(disable: boolean): void;
   hidden?: boolean;
   hasHandle?: boolean;
-  handleId?: string;
+  handleId?: string | number;
   handleType?: "target" | "source";
   handlePosition?: Position;
   handleIsConnectable?: any;
@@ -177,10 +177,10 @@ interface CustomIconElementProps {
 interface HandleElementProps {
   label: string;
   handleId?: string;
-  type: "target" | "source";
-  position: Position;
-  isConnectable: any;
-  style: any;
+  type?: "target" | "source" | string;
+  position?: Position;
+  isConnectable?: any;
+  style?: any;
 }
 
 export function HandleElement(props: HandleElementProps) {
@@ -197,13 +197,15 @@ export function HandleElement(props: HandleElementProps) {
         padding: "0.25rem 0",
       }}
     >
-      <Handle
-        type={props.type}
-        position={props.position}
-        id={props.label}
-        isConnectable={props.isConnectable}
-        style={props.style}
-      />
+      { (props.type === "target" || props.type === "source") && props.position &&
+        <Handle
+          type={props.type}
+          position={props.position}
+          id={props.label}
+          isConnectable={props.isConnectable}
+          style={props.style}
+        />
+      }
       {props.label}
     </div>
   );
@@ -241,8 +243,8 @@ export function TextInput(props: TextInputProps) {
   return (
     <div
       id="data-item"
-      onMouseEnter={() => props.disableDrag(true)}
-      onMouseLeave={() => props.disableDrag(false)}
+      onMouseEnter={() => props.disableDrag ? props.disableDrag(true) : {}}
+      onMouseLeave={() => props.disableDrag ? props.disableDrag(false) : {}}
       style={{
         gap: "5px",
         alignItems: "center",
@@ -279,8 +281,8 @@ export function TextAreaInput(props: TextInputProps) {
   return (
     <div
       id="data-item"
-      onMouseEnter={() => props.disableDrag(true)}
-      onMouseLeave={() => props.disableDrag(false)}
+      onMouseEnter={() => props.disableDrag ? props.disableDrag(true) : {}}
+      onMouseLeave={() => props.disableDrag ? props.disableDrag(false) : {}}
       style={{
         gap: "5px",
         display: props.hidden ? "none" : "flex",
@@ -393,28 +395,29 @@ export function RadioInput(props: RadioInputProps) {
         }}
         id={`group-${Math.random().toString(36).substring(7)}`}
       >
-        {props.options.map((label, index) => (
-          <div style={{ textAlign: "center" }} key={index}>
-            <input
-              type="radio"
-              value={label}
-              name={`group-${Math.random().toString(36).substring(7)}`}
-              style={{ fontSize: "12px", cursor: "pointer" }}
-              checked={selected === index}
-              onChange={() => setSelected(index)}
-            />
-            <p
-              style={{
-                lineHeight: 0,
-                fontSize: "10px",
-                margin: "10px 0 0 0",
-                color: "white",
-              }}
-            >
-              {label}
-            </p>
-          </div>
-        ))}
+        {Array.isArray(props.options) &&
+          props.options.map((label, index) => (
+            <div style={{ textAlign: "center" }} key={index}>
+              <input
+                type="radio"
+                value={label}
+                name={`group-${Math.random().toString(36).substring(7)}`}
+                style={{ fontSize: "12px", cursor: "pointer" }}
+                checked={selected === index}
+                onChange={() => setSelected(index)}
+              />
+              <p
+                style={{
+                  lineHeight: 0,
+                  fontSize: "10px",
+                  margin: "10px 0 0 0",
+                  color: "white",
+                }}
+              >
+                {label}
+              </p>
+            </div>
+          ))}
       </fieldset>
     </div>
   );
@@ -468,8 +471,8 @@ export function SliderInput(props: SliderInputProps) {
   return (
     <div
       id="data-item"
-      onMouseEnter={() => props.disableDrag(true)}
-      onMouseLeave={() => props.disableDrag(false)}
+      onMouseEnter={() => props.disableDrag ? props.disableDrag(true) : {}}
+      onMouseLeave={() => props.disableDrag ? props.disableDrag(false) : {}}
       style={{
         display: props.hidden ? "none" : "flex",
         gap: "5px",
@@ -550,7 +553,7 @@ export function DropdownInput(props: DropdownInputProps) {
         value={selection}
         onChange={(event) => setSelection(event.target.value)}
       >
-        {props.options.map((option, index) => (
+        {Array.isArray(props.options) && props.options.map((option, index) => (
           <option key={index} value={option}>
             {option}
           </option>
@@ -561,7 +564,7 @@ export function DropdownInput(props: DropdownInputProps) {
 }
 
 export function CheckboxInput(props: CheckboxInputProps) {
-  const [states, setStates] = React.useState(props.options["states"]);
+  const [states, setStates] = React.useState(props.options && props.options["states"]);
 
   return (
     <div
@@ -570,7 +573,7 @@ export function CheckboxInput(props: CheckboxInputProps) {
         display: props.hidden ? "none" : "flex",
         gap: "5px",
         alignItems: "center",
-        marginBottom: props.options["labels"].length > 1 ? "0.5rem" : "0",
+        marginBottom: props.options && props.options["labels"].length > 1 ? "0.5rem" : "0",
       }}
     >
       {props.hasHandle && (
@@ -592,28 +595,29 @@ export function CheckboxInput(props: CheckboxInputProps) {
           width: "100%",
           display: "flex",
           justifyContent:
-            props.options["labels"].length > 1 ? "space-around" : "left",
+            props.options && props.options["labels"].length > 1 ? "space-around" : "left",
           padding: "0",
         }}
         id="group"
       >
-        {props.options["labels"].map((label, index) => (
+        {props.options && props.options["labels"].map((label, index) => (
           <div style={{ textAlign: "center" }} key={index}>
             <input
               type="checkbox"
-              value={states[index].toString()}
+              value={states && states[index].toString()}
               name="group"
               style={{ fontSize: "12px", cursor: "pointer" }}
-              checked={states[index]}
+              checked={states && states[index]}
               onChange={() => {
                 setStates((prevStates) => {
+                  if (!prevStates) return;
                   const newStates = [...prevStates];
                   newStates[index] = !newStates[index];
                   return newStates;
                 });
               }}
             />
-            {props.options["labels"].length > 1 && (
+            {props.options && props.options["labels"].length > 1 && (
               <p
                 style={{
                   lineHeight: 0,
@@ -679,8 +683,8 @@ export function NumberInput(props: NumberInputProps) {
   return (
     <div
       id="data-item"
-      onMouseEnter={() => props.disableDrag(true)}
-      onMouseLeave={() => props.disableDrag(false)}
+      onMouseEnter={() => props.disableDrag ? props.disableDrag(true) : {}}
+      onMouseLeave={() => props.disableDrag ? props.disableDrag(false) : {}}
       style={{
         display: props.hidden ? "none" : "flex",
         gap: "5px",
@@ -733,16 +737,17 @@ export function BezierCurveInput(props: BezierCurveInputProps) {
     const svgRect = svg.getBoundingClientRect();
 
     // Calculate the new coordinates within the SVG's bounding box
-    let newX = handles[draggingIndex].x;
+    let newX = handles ? handles[draggingIndex].x : 0;
     if (draggingIndex === 1 || draggingIndex === 2) {
       newX = event.clientX - svgRect.left;
-      newX = Math.max(0, Math.min(newX, props.maxX)); // Ensure newX is within bounds
+      newX = Math.max(0, Math.min(newX, props.maxX ? props.maxX : 0)); // Ensure newX is within bounds
     }
 
     let newY = event.clientY - svgRect.top;
-    newY = Math.max(0, Math.min(newY, props.maxY)); // Ensure newY is within bounds
+    newY = Math.max(0, Math.min(newY, props.maxY ? props.maxY : 0)); // Ensure newY is within bounds
 
     setHandles((prevHandles) => {
+      if (!prevHandles) return;
       const newHandles = [...prevHandles];
       newHandles[draggingIndex] = { x: newX, y: newY };
       return newHandles;
@@ -766,8 +771,8 @@ export function BezierCurveInput(props: BezierCurveInputProps) {
   return (
     <div
       id="data-item"
-      onMouseEnter={() => props.disableDrag(true)}
-      onMouseLeave={() => props.disableDrag(false)}
+      onMouseEnter={() => props.disableDrag ? props.disableDrag(true) : {}}
+      onMouseLeave={() => props.disableDrag ? props.disableDrag(false) : {}}
       style={{ display: props.hidden ? "none" : "default", cursor: "default" }}
     >
       {props.hasHandle && (
@@ -793,31 +798,31 @@ export function BezierCurveInput(props: BezierCurveInputProps) {
       >
         {/* Connecting lines */}
         <line
-          x1={handles[0].x}
-          y1={handles[0].y}
-          x2={handles[1].x}
-          y2={handles[1].y}
+          x1={handles ? handles[0].x : 0}
+          y1={handles ? handles[0].y : 0}
+          x2={handles ? handles[1].x : 0}
+          y2={handles ? handles[1].y : 0}
           stroke="#00aeff"
           strokeDasharray="4"
         />
         <line
-          x1={handles[3].x}
-          y1={handles[3].y}
-          x2={handles[2].x}
-          y2={handles[2].y}
+          x1={handles ? handles[3].x : 0}
+          y1={handles ? handles[3].y : 0}
+          x2={handles ? handles[2].x : 0}
+          y2={handles ? handles[2].y : 0}
           stroke="#00aeff"
           strokeDasharray="4"
         />
 
         {/* Bezier Curve */}
         <path
-          d={`M${handles[0].x},${handles[0].y} C${handles[1].x},${handles[1].y} ${handles[2].x},${handles[2].y} ${handles[3].x},${handles[3].y}`}
+          d={`M${handles ? handles[0].x : 0},${handles ? handles[0].y : 0} C${handles ? handles[1].x : 0},${handles ? handles[1].y : 0} ${handles ? handles[2].x : 0},${handles ? handles[2].y : 0} ${handles ? handles[3].x : 0},${handles ? handles[3].y : 0}`}
           fill="none"
           stroke="white"
         />
 
         {/* Control Points */}
-        {handles.map((handle, index) => (
+        {handles && handles.map((handle, index) => (
           <circle
             key={index}
             cx={handle.x}

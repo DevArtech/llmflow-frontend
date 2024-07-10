@@ -14,58 +14,32 @@ import {
   NumberInput,
   TextAreaInput,
 } from "./node-elements.tsx";
+import { Position } from "reactflow";
 
 interface NodeBuilderProps {
   items: [
     {
-      text?: {
-        label: string;
-        disableDrag(disable: boolean): void;
-        placeholder?: string;
-        type?: string;
-      };
+      itemType: string;
+      label: string;
+      required?: boolean;
+      disableDrag?(disable: boolean): void;
+      placeholder?: string;
+      type?: "target" | "source" | string;
+      options?: string[] | { labels: string[]; states: boolean[] };
+      initial?: number | string;
+      initialColor?: string
+      min?: number;
+      max?: number;
+      step?: number;
+      startingDate?: string
+      initialHandles?: { x: number; y: number }[];
+      maxX?: number;
+      maxY?: number;
+      handleId?: string;
+      position?: Position;
+      isConnectable?: any;
+      style?: any;
     },
-    { file?: { disableDrag?: any; label: string } },
-    { radio?: { label: string; options: string[]; initial?: number } },
-    { color?: { label: string; initialColor?: string } },
-    {
-      slider?: {
-        label: string;
-        min: number;
-        max: number;
-        step: number;
-        initial?: number;
-        disableDrag(disable: boolean): void;
-      };
-    },
-    { dropdown?: { label: string; options: string[]; initial?: string } },
-    {
-      checkbox?: {
-        label: string;
-        options: { labels: string[]; states: boolean[] };
-        isToggle?: boolean;
-      };
-    },
-    { datetime?: { label: string; startingDate: string } },
-    {
-      bezierCurve?: {
-        label: string;
-        initialHandles: { x: number; y: number }[];
-        disableDrag(disable: boolean): void;
-        maxX: number;
-        maxY: number;
-      };
-    },
-    {
-      number?: {
-        label: string;
-        min?: number;
-        max?: number;
-        step?: number;
-        initial?: number;
-        disableDrag(disable: boolean): void;
-      };
-    }
   ];
   disableDrag(disable: boolean): void;
 }
@@ -78,62 +52,65 @@ export function NodeBuilder(props: NodeBuilderProps) {
 
   let i = 0;
   for (let item in props.items) {
-    let key = Object.keys(props.items[item])[0];
-    let value = Object.values(props.items[item])[0];
+    let key = props.items[item]["itemType"]
+    let obj = props.items[item];
 
-    if (key === "text-display" && value.text) {
-      nodeObj.push(<TextElement text={value.text} />);
+    console.log(key);
+    console.log(obj);
+
+    if (key === "text-display" && obj.label) {
+      nodeObj.push(<TextElement text={obj.label} />);
     }
-    if (key === "handle" && value.label) {
-      nodeObj.push(<HandleElement {...value} />);
+    if (key === "handle" && obj.label) {
+      nodeObj.push(<HandleElement {...obj} />);
     }
-    if (key === "text" && value.label) {
-      if (!value.disableDrag) {
-        value.disableDrag = props.disableDrag;
+    if (key === "text" && obj.label) {
+      if (!obj.disableDrag) {
+        obj.disableDrag = props.disableDrag;
       }
-      nodeObj.push(<TextInput {...value} handleId={i} />);
+      nodeObj.push(<TextInput {...obj} handleId={i} />);
     }
-    if (key === "text-area" && value.label) {
-      if (!value.disableDrag) {
-        value.disableDrag = props.disableDrag;
+    if (key === "text-area" && obj.label) {
+      if (!obj.disableDrag) {
+        obj.disableDrag = props.disableDrag;
       }
-      nodeObj.push(<TextAreaInput {...value} handleId={i} />);
+      nodeObj.push(<TextAreaInput {...obj} handleId={i} />);
     }
-    if (key === "file" && value.label) {
-      nodeObj.push(<FileInput {...value} handleId={i} />);
+    if (key === "file" && obj.label) {
+      nodeObj.push(<FileInput {...obj} handleId={i} />);
     }
-    if (key === "radio" && value.label) {
-      nodeObj.push(<RadioInput {...value} handleId={i} />);
+    if (key === "radio" && obj.label) {
+      nodeObj.push(<RadioInput {...obj} handleId={i} />);
     }
-    if (key === "color" && value.label) {
-      nodeObj.push(<ColorInput {...value} handleId={i} />);
+    if (key === "color" && obj.label) {
+      nodeObj.push(<ColorInput {...obj} handleId={i} />);
     }
-    if (key === "slider" && value.label) {
-      if (!value.disableDrag) {
-        value.disableDrag = props.disableDrag;
+    if (key === "slider" && obj.label) {
+      if (!obj.disableDrag) {
+        obj.disableDrag = props.disableDrag;
       }
-      nodeObj.push(<SliderInput {...value} handleId={i} />);
+      nodeObj.push(<SliderInput {...obj} handleId={i} />);
     }
-    if (key === "dropdown" && value.label) {
-      nodeObj.push(<DropdownInput {...value} handleId={i} />);
+    if (key === "dropdown" && obj.label) {
+      nodeObj.push(<DropdownInput {...obj} handleId={i} />);
     }
-    if (key === "checkbox" && value.label) {
-      nodeObj.push(<CheckboxInput {...value} handleId={i} />);
+    if (key === "checkbox" && obj.label) {
+      nodeObj.push(<CheckboxInput {...obj} handleId={i} />);
     }
-    if (key === "datetime" && value.label) {
-      nodeObj.push(<DatetimeInput {...value} handleId={i} />);
+    if (key === "datetime" && obj.label) {
+      nodeObj.push(<DatetimeInput {...obj} handleId={i} />);
     }
-    if (key === "bezierCurve" && value.label) {
-      if (!value.disableDrag) {
-        value.disableDrag = props.disableDrag;
+    if (key === "bezierCurve" && obj.label) {
+      if (!obj.disableDrag) {
+        obj.disableDrag = props.disableDrag;
       }
-      nodeObj.push(<BezierCurveInput {...value} handleId={i} />);
+      nodeObj.push(<BezierCurveInput {...obj} handleId={i} />);
     }
-    if (key === "number" && value.label) {
-      if (!value.disableDrag) {
-        value.disableDrag = props.disableDrag;
+    if (key === "number" && obj.label) {
+      if (!obj.disableDrag) {
+        obj.disableDrag = props.disableDrag;
       }
-      nodeObj.push(<NumberInput {...value} handleId={i} />);
+      nodeObj.push(<NumberInput {...obj} handleId={i} />);
     }
 
     i++;
