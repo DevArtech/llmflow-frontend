@@ -344,7 +344,7 @@ export default function App() {
         setIntegrations(result["integrations"]);
         const newIntegrationButtons = [];
         result["integrations"].forEach((integration) => {
-          fetch(`http://127.0.0.1:8000/api/v1/${integration.toLowerCase()}`)
+          fetch(`http://127.0.0.1:8000/api/v1/${integration.toLowerCase()}/`)
             .then((response) => response.json())
             .then((result) => {
               result["options"].forEach((option) => {
@@ -492,7 +492,7 @@ export default function App() {
       };
       nodeArchitecture["Edges"].push(edgeItem);
     });
-
+    
     const requestObj = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
