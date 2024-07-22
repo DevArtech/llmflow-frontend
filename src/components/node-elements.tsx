@@ -232,12 +232,19 @@ export function TextElement(props: { text: string; hidden?: boolean }) {
 }
 
 export function TextInput(props: TextInputProps) {
-  const [value, setValue] = React.useState<string>("");
+  const [value, setValue] = React.useState<string | undefined>("");
 
   React.useEffect(() => {
-    if (props.label === "API Key") {
-      setValue(process.env.REACT_APP_API_KEY || "");
-    }
+    Object.keys(process.env).forEach((key) => {
+      if(key.startsWith("REACT_APP_")) {
+        const keyWithoutPrefix = key.replace("REACT_APP_", "");
+        const processedLabel = props.label.toUpperCase().replace(/\s+/g, "_");
+        if(keyWithoutPrefix === processedLabel) {
+          console.log("Found env variable match: ", keyWithoutPrefix);
+          setValue(process.env[key])
+        }
+      }
+    })
   }, []);
 
   return (

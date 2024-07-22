@@ -55,9 +55,6 @@ export function NodeBuilder(props: NodeBuilderProps) {
     let key = props.items[item]["itemType"]
     let obj = props.items[item];
 
-    console.log(key);
-    console.log(obj);
-
     if (key === "text-display" && obj.label) {
       nodeObj.push(<TextElement text={obj.label} />);
     }

@@ -15,10 +15,7 @@ For full frontend capabilities, back sure the [backend](https://github.com/DevAr
 ### Using environment variables
 
 1. Create a .env file in the root directory
-2. Fill out the following environment variables if you wish to use them:
-
-```
-REACT_APP_API_KEY="[insert API key here]"
-```
+2. Add environment variables in the format `REACT_APP_<VARIABLE_NAME>="<VALUE>"` (Example: `REACT_APP_BASE_URL="http://localhost:11434"`)
+3. Reload the development server, all node input fields with the same name as the environment variable will be prefilled with the value.
 
 All nodes which use the above variables will be automatically prefilled with the environment variable.
