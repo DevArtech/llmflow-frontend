@@ -1,4 +1,4 @@
-# LLMFlow - frontend
+# LLMFlow - Frontend
 
 LLMFlow - A programming language for LLM Apps
 
