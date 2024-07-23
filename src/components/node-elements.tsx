@@ -885,6 +885,10 @@ export function SmartElement(props: CustomIconElementProps) {
     return (
       <Icons.Build style={{ color: props.color ? props.color : "white" }} />
     );
+  } else if (props.name === "rosie llm" || props.name === "rosie sklearn") {
+    return (
+      <Icons.FilterVintage style={{ color: props.color ? props.color : "white" }} />
+    );
   } else {
     if (!props.name) {
       return <Icons.Help style={{ color: "white" }} />;
