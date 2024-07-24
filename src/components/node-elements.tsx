@@ -52,7 +52,7 @@ interface FileInputProps {
 interface RadioInputProps {
   label: string;
   required?: boolean;
-  options?: string[] | { labels: string[]; states: boolean[]; };
+  options?: string[] | { labels: string[]; states: boolean[] };
   initial?: number | string;
   hidden?: boolean;
   hasHandle?: boolean;
@@ -96,7 +96,7 @@ interface SliderInputProps {
 interface DropdownInputProps {
   label: string;
   required?: boolean;
-  options?: string[] | { labels: string[]; states: boolean[]; };
+  options?: string[] | { labels: string[]; states: boolean[] };
   initial?: string | number;
   hidden?: boolean;
   hasHandle?: boolean;
@@ -197,15 +197,16 @@ export function HandleElement(props: HandleElementProps) {
         padding: "0.25rem 0",
       }}
     >
-      { (props.type === "target" || props.type === "source") && props.position &&
-        <Handle
-          type={props.type}
-          position={props.position}
-          id={props.label}
-          isConnectable={props.isConnectable}
-          style={props.style}
-        />
-      }
+      {(props.type === "target" || props.type === "source") &&
+        props.position && (
+          <Handle
+            type={props.type}
+            position={props.position}
+            id={props.label}
+            isConnectable={props.isConnectable}
+            style={props.style}
+          />
+        )}
       {props.label}
     </div>
   );
@@ -236,22 +237,22 @@ export function TextInput(props: TextInputProps) {
 
   React.useEffect(() => {
     Object.keys(process.env).forEach((key) => {
-      if(key.startsWith("REACT_APP_")) {
+      if (key.startsWith("REACT_APP_")) {
         const keyWithoutPrefix = key.replace("REACT_APP_", "");
         const processedLabel = props.label.toUpperCase().replace(/\s+/g, "_");
-        if(keyWithoutPrefix === processedLabel) {
+        if (keyWithoutPrefix === processedLabel) {
           console.log("Found env variable match: ", keyWithoutPrefix);
-          setValue(process.env[key])
+          setValue(process.env[key]);
         }
       }
-    })
+    });
   }, []);
 
   return (
     <div
       id="data-item"
-      onMouseEnter={() => props.disableDrag ? props.disableDrag(true) : {}}
-      onMouseLeave={() => props.disableDrag ? props.disableDrag(false) : {}}
+      onMouseEnter={() => (props.disableDrag ? props.disableDrag(true) : {})}
+      onMouseLeave={() => (props.disableDrag ? props.disableDrag(false) : {})}
       style={{
         gap: "5px",
         alignItems: "center",
@@ -288,8 +289,8 @@ export function TextAreaInput(props: TextInputProps) {
   return (
     <div
       id="data-item"
-      onMouseEnter={() => props.disableDrag ? props.disableDrag(true) : {}}
-      onMouseLeave={() => props.disableDrag ? props.disableDrag(false) : {}}
+      onMouseEnter={() => (props.disableDrag ? props.disableDrag(true) : {})}
+      onMouseLeave={() => (props.disableDrag ? props.disableDrag(false) : {})}
       style={{
         gap: "5px",
         display: props.hidden ? "none" : "flex",
@@ -478,8 +479,8 @@ export function SliderInput(props: SliderInputProps) {
   return (
     <div
       id="data-item"
-      onMouseEnter={() => props.disableDrag ? props.disableDrag(true) : {}}
-      onMouseLeave={() => props.disableDrag ? props.disableDrag(false) : {}}
+      onMouseEnter={() => (props.disableDrag ? props.disableDrag(true) : {})}
+      onMouseLeave={() => (props.disableDrag ? props.disableDrag(false) : {})}
       style={{
         display: props.hidden ? "none" : "flex",
         gap: "5px",
@@ -560,18 +561,21 @@ export function DropdownInput(props: DropdownInputProps) {
         value={selection}
         onChange={(event) => setSelection(event.target.value)}
       >
-        {Array.isArray(props.options) && props.options.map((option, index) => (
-          <option key={index} value={option}>
-            {option}
-          </option>
-        ))}
+        {Array.isArray(props.options) &&
+          props.options.map((option, index) => (
+            <option key={index} value={option}>
+              {option}
+            </option>
+          ))}
       </select>
     </div>
   );
 }
 
 export function CheckboxInput(props: CheckboxInputProps) {
-  const [states, setStates] = React.useState(props.options && props.options["states"]);
+  const [states, setStates] = React.useState(
+    props.options && props.options["states"]
+  );
 
   return (
     <div
@@ -580,7 +584,8 @@ export function CheckboxInput(props: CheckboxInputProps) {
         display: props.hidden ? "none" : "flex",
         gap: "5px",
         alignItems: "center",
-        marginBottom: props.options && props.options["labels"].length > 1 ? "0.5rem" : "0",
+        marginBottom:
+          props.options && props.options["labels"].length > 1 ? "0.5rem" : "0",
       }}
     >
       {props.hasHandle && (
@@ -602,42 +607,45 @@ export function CheckboxInput(props: CheckboxInputProps) {
           width: "100%",
           display: "flex",
           justifyContent:
-            props.options && props.options["labels"].length > 1 ? "space-around" : "left",
+            props.options && props.options["labels"].length > 1
+              ? "space-around"
+              : "left",
           padding: "0",
         }}
         id="group"
       >
-        {props.options && props.options["labels"].map((label, index) => (
-          <div style={{ textAlign: "center" }} key={index}>
-            <input
-              type="checkbox"
-              value={states && states[index].toString()}
-              name="group"
-              style={{ fontSize: "12px", cursor: "pointer" }}
-              checked={states && states[index]}
-              onChange={() => {
-                setStates((prevStates) => {
-                  if (!prevStates) return;
-                  const newStates = [...prevStates];
-                  newStates[index] = !newStates[index];
-                  return newStates;
-                });
-              }}
-            />
-            {props.options && props.options["labels"].length > 1 && (
-              <p
-                style={{
-                  lineHeight: 0,
-                  fontSize: "10px",
-                  color: "white",
-                  margin: "10px 0 0 0",
+        {props.options &&
+          props.options["labels"].map((label, index) => (
+            <div style={{ textAlign: "center" }} key={index}>
+              <input
+                type="checkbox"
+                value={states && states[index].toString()}
+                name="group"
+                style={{ fontSize: "12px", cursor: "pointer" }}
+                checked={states && states[index]}
+                onChange={() => {
+                  setStates((prevStates) => {
+                    if (!prevStates) return;
+                    const newStates = [...prevStates];
+                    newStates[index] = !newStates[index];
+                    return newStates;
+                  });
                 }}
-              >
-                {label}
-              </p>
-            )}
-          </div>
-        ))}
+              />
+              {props.options && props.options["labels"].length > 1 && (
+                <p
+                  style={{
+                    lineHeight: 0,
+                    fontSize: "10px",
+                    color: "white",
+                    margin: "10px 0 0 0",
+                  }}
+                >
+                  {label}
+                </p>
+              )}
+            </div>
+          ))}
       </fieldset>
     </div>
   );
@@ -690,8 +698,8 @@ export function NumberInput(props: NumberInputProps) {
   return (
     <div
       id="data-item"
-      onMouseEnter={() => props.disableDrag ? props.disableDrag(true) : {}}
-      onMouseLeave={() => props.disableDrag ? props.disableDrag(false) : {}}
+      onMouseEnter={() => (props.disableDrag ? props.disableDrag(true) : {})}
+      onMouseLeave={() => (props.disableDrag ? props.disableDrag(false) : {})}
       style={{
         display: props.hidden ? "none" : "flex",
         gap: "5px",
@@ -778,8 +786,8 @@ export function BezierCurveInput(props: BezierCurveInputProps) {
   return (
     <div
       id="data-item"
-      onMouseEnter={() => props.disableDrag ? props.disableDrag(true) : {}}
-      onMouseLeave={() => props.disableDrag ? props.disableDrag(false) : {}}
+      onMouseEnter={() => (props.disableDrag ? props.disableDrag(true) : {})}
+      onMouseLeave={() => (props.disableDrag ? props.disableDrag(false) : {})}
       style={{ display: props.hidden ? "none" : "default", cursor: "default" }}
     >
       {props.hasHandle && (
@@ -823,24 +831,29 @@ export function BezierCurveInput(props: BezierCurveInputProps) {
 
         {/* Bezier Curve */}
         <path
-          d={`M${handles ? handles[0].x : 0},${handles ? handles[0].y : 0} C${handles ? handles[1].x : 0},${handles ? handles[1].y : 0} ${handles ? handles[2].x : 0},${handles ? handles[2].y : 0} ${handles ? handles[3].x : 0},${handles ? handles[3].y : 0}`}
+          d={`M${handles ? handles[0].x : 0},${handles ? handles[0].y : 0} C${
+            handles ? handles[1].x : 0
+          },${handles ? handles[1].y : 0} ${handles ? handles[2].x : 0},${
+            handles ? handles[2].y : 0
+          } ${handles ? handles[3].x : 0},${handles ? handles[3].y : 0}`}
           fill="none"
           stroke="white"
         />
 
         {/* Control Points */}
-        {handles && handles.map((handle, index) => (
-          <circle
-            key={index}
-            cx={handle.x}
-            cy={handle.y}
-            r={5}
-            fill="blue"
-            stroke="#00aeff"
-            onMouseDown={() => handleDragStart(index)}
-            style={{ cursor: "grab" }}
-          />
-        ))}
+        {handles &&
+          handles.map((handle, index) => (
+            <circle
+              key={index}
+              cx={handle.x}
+              cy={handle.y}
+              r={5}
+              fill="blue"
+              stroke="#00aeff"
+              onMouseDown={() => handleDragStart(index)}
+              style={{ cursor: "grab" }}
+            />
+          ))}
       </svg>
     </div>
   );
@@ -884,6 +897,12 @@ export function SmartElement(props: CustomIconElementProps) {
   } else if (props.name === "chat constructor") {
     return (
       <Icons.Build style={{ color: props.color ? props.color : "white" }} />
+    );
+  } else if (props.name === "rosie llm" || props.name === "rosie sklearn") {
+    return (
+      <Icons.FilterVintage
+        style={{ color: props.color ? props.color : "white" }}
+      />
     );
   } else {
     if (!props.name) {
