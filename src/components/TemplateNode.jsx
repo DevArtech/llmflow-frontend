@@ -4,6 +4,7 @@ import {
   GeminiElement,
   OllamaElement,
   OpenAIElement,
+  ROSIEElement,
 } from "./node-elements.tsx";
 
 const DynamicIcon = ({ iconName, color }) => {
@@ -17,6 +18,10 @@ const DynamicIcon = ({ iconName, color }) => {
 
   if (iconName === "Ollama") {
     return <OllamaElement width="24px" height="24px" />;
+  }
+
+  if (iconName === "ROSIE") {
+    return <ROSIEElement width="24px" height="24px"/>;
   }
 
   const IconComponent = Icons[iconName];
